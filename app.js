@@ -115,9 +115,19 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- FIRESTORE SYNC ---
 async function initFirestore() {
   const productsCol = collection(db, 'mukil_products');
-  console.log("🔥 Initializing Firestore Sync...");
+  let isConnected = false;
+
+  // Fallback timeout: If the local firewall blocks Firebase, render the photos anyway
+  setTimeout(() => {
+    if (!isConnected) {
+      console.warn("⚠️ Database connection blocked by firewall. Using offline fallback data...");
+      products = [...defaultProducts];
+      renderProducts('all');
+    }
+  }, 2000);
   
   onSnapshot(productsCol, (snapshot) => {
+    isConnected = true;
     console.log("📦 Firestore Snapshot received. Count:", snapshot.size);
     // Force seed if less than 5 products exist (this injects all 12 photos instantly)
     if (snapshot.size < 5) {
