@@ -45,22 +45,63 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!banner) {
       banner = document.createElement('div');
       banner.id = 'dbStatusBanner';
-      banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;padding:14px 20px;font-size:14px;font-weight:500;text-align:center;transition:all 0.3s;';
-      document.body.prepend(banner);
+      banner.style.padding = '10px 20px';
+      banner.style.textAlign = 'center';
+      banner.style.fontWeight = '500';
+      banner.style.fontSize = '0.9rem';
+      banner.style.transition = 'all 0.3s ease';
+      banner.style.position = 'relative';
+      banner.style.zIndex = '9999';
+      document.body.insertBefore(banner, document.body.firstChild);
     }
+
+    if (!document.getElementById('bannerAnimations')) {
+      const style = document.createElement('style');
+      style.id = 'bannerAnimations';
+      style.innerHTML = `
+        @keyframes pulse-buffer {
+          0% { opacity: 0.5; }
+          50% { opacity: 1; transform: scale(1.02); }
+          100% { opacity: 0.5; }
+        }
+        @keyframes slide-down-fade {
+          0% { transform: translateY(-100%); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes pop-in {
+          0% { transform: scale(0.95); opacity: 0; }
+          60% { transform: scale(1.02); opacity: 1; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // Reset animations
+    banner.style.animation = 'none';
+    void banner.offsetWidth; // trigger reflow
+
     if (type === 'error') {
       banner.style.background = '#e74c3c';
       banner.style.color = '#fff';
       banner.innerHTML = message;
+      banner.style.animation = 'slide-down-fade 0.4s ease-out forwards';
     } else if (type === 'success') {
       banner.style.background = '#27ae60';
       banner.style.color = '#fff';
       banner.innerHTML = message;
-      setTimeout(() => banner.remove(), 4000);
+      banner.style.animation = 'pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+      setTimeout(() => {
+        banner.style.opacity = '0';
+        banner.style.transform = 'translateY(-10px)';
+        setTimeout(() => { if(banner && banner.parentNode) banner.remove(); banner = null; }, 300);
+      }, 4000);
     } else if (type === 'warning') {
       banner.style.background = '#f39c12';
       banner.style.color = '#fff';
-      banner.innerHTML = message;
+      // Use standard text but apply pulse-buffer animation to the container span
+      banner.innerHTML = `<span style="display:inline-block; animation: pulse-buffer 1.5s infinite ease-in-out;">${message.replace('⏳', '🔄')}</span>`;
+      banner.style.animation = 'slide-down-fade 0.4s ease-out forwards';
     }
   }
 
