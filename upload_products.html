@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Upload Script</title>
+</head>
+<body>
+  <h1>Uploading Products to Firebase...</h1>
+  <div id="log"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdi6rU_eGbrdbenE5LQp-bgC58QkYQ-UQ",
+      authDomain: "mukil-fabrics.firebaseapp.com",
+      projectId: "mukil-fabrics",
+      storageBucket: "mukil-fabrics.firebasestorage.app",
+      messagingSenderId: "486533319432",
+      appId: "1:486533319432:web:093be705ef9d96a4647abd",
+      measurementId: "G-RVMHF7LXTQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app, "(default)");
+    const logDiv = document.getElementById('log');
+
+    window.onerror = function(msg) {
+      logDiv.innerHTML += `<div style="color:red; font-weight:bold;">CRITICAL ERROR: ${msg}</div>`;
+    };
+    window.addEventListener('unhandledrejection', function(event) {
+      logDiv.innerHTML += `<div style="color:red; font-weight:bold;">PROMISE ERROR: ${event.reason}</div>`;
+    });
+
+    function log(msg) {
+      console.log(msg);
+      logDiv.innerHTML += `<div>${msg}</div>`;
+    }
+
+    const fileNames = [
+      "Pleated maxi with lining ❤️.jpg",
+      "Pleated maxi with lining ❤️ (1).jpg",
+      "Pleated maxi with lining ❤️ (2).jpg",
+      "Pleated maxi with lining ❤️ (3).jpg",
+      "Pleated maxi with lining ❤️ (4).jpg",
+      "Pleated maxi with lining ❤️ (5).jpg",
+      "Pleated maxi with lining ❤️ (7).jpg",
+      "Pleated maxi with lining ❤️ (8).jpg",
+      "Pleated maxi with lining ❤️ (9).jpg",
+      "Pleated maxi with lining ❤️ (10).jpg",
+      "Pleated maxi with lining ❤️ (11).jpg",
+      "Pleated maxi with lining ❤️ (12).jpg"
+    ];
+
+    const productsCol = collection(db, 'mukil_products');
+
+    async function uploadAll() {
+      for (let i = 0; i < fileNames.length; i++) {
+        const product = {
+          name: "Pleated Maxi with Lining",
+          price: 1499,
+          originalPrice: 1999,
+          discount: "25%",
+          images: [`photos/${fileNames[i]}`],
+          category: ["all", "maxi", "new"],
+          tags: ["New", "Sale"],
+          sizes: [
+            { size: "S", available: true, quantity: 10 },
+            { size: "M", available: true, quantity: 10 },
+            { size: "L", available: true, quantity: 10 },
+            { size: "XL", available: true, quantity: 10 },
+            { size: "XXL", available: true, quantity: 10 }
+          ],
+          reviews: Math.floor(Math.random() * 50) + 10
+        };
+
+        try {
+          await addDoc(productsCol, product);
+          log(`✅ Added product ${i+1}: ${fileNames[i]}`);
+        } catch (err) {
+          log(`❌ Failed to add product ${i+1}: ${err.message}`);
+        }
+      }
+      log("🎉 ALL PRODUCTS UPLOADED SUCCESSFULLY!");
+    }
+
+    uploadAll();
+  </script>
+</body>
+</html>
