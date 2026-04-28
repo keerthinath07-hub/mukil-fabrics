@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Mukil Fabrics</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>Mukil Admin</h2>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="#" class="active" id="tabProducts">Products</a></li>
+          <li><a href="#" id="tabOrders">Orders</a></li>
+          <li><a href="index.html">Back to Store</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="topbar">
+        <h1 id="pageTitle">Product Management</h1>
+        <button id="addProductBtn" class="btn-primary">Add New Product</button>
+      </header>
+
+      <!-- Products Section -->
+      <section class="content-section" id="sectionProducts">
+        <div class="table-container">
+          <table id="productsTable">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Discount</th>
+                <th>Stock (Sizes)</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productsTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Orders Section -->
+      <section class="content-section" id="sectionOrders" style="display: none;">
+        <div class="stats-row" id="ordersStats" style="display:flex; gap:20px; margin-bottom: 20px;">
+          <!-- Rendered via JS -->
+        </div>
+        <div class="table-container">
+          <table id="ordersTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Items Ordered</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Product Modal -->
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" id="closeModalBtn">&times;</span>
+      <h2 id="modalTitle">Add Product</h2>
+      
+      <form id="productForm">
+        <input type="hidden" id="productId">
+        
+        <div class="form-group">
+          <label for="productName">Product Name</label>
+          <input type="text" id="productName" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="productPrice">Price (₹)</label>
+            <input type="number" id="productPrice" required>
+          </div>
+          <div class="form-group">
+            <label for="productOriginalPrice">Original Price (₹)</label>
+            <input type="number" id="productOriginalPrice">
+          </div>
+          <div class="form-group">
+            <label for="productDiscount">Discount Text (e.g. 25%)</label>
+            <input type="text" id="productDiscount">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="productImages">Image URLs (comma separated)</label>
+          <input type="text" id="productImages" required placeholder="images/dress_1_main.jpg, images/dress_1_back.jpg">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="productCategory">Categories (comma separated)</label>
+            <input type="text" id="productCategory" required placeholder="all, bestseller, maxi">
+          </div>
+          <div class="form-group">
+            <label for="productTags">Tags (comma separated)</label>
+            <input type="text" id="productTags" placeholder="Bestseller, Sale">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Size Quantities (0 = Out of stock)</label>
+          <div class="size-quantities">
+            <div class="size-qty-group"><label>S</label><input type="number" id="qtyS" min="0" value="0"></div>
+            <div class="size-qty-group"><label>M</label><input type="number" id="qtyM" min="0" value="0"></div>
+            <div class="size-qty-group"><label>L</label><input type="number" id="qtyL" min="0" value="0"></div>
+            <div class="size-qty-group"><label>XL</label><input type="number" id="qtyXL" min="0" value="0"></div>
+            <div class="size-qty-group"><label>XXL</label><input type="number" id="qtyXXL" min="0" value="0"></div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="cancelModalBtn">Cancel</button>
+          <button type="submit" class="btn-primary">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

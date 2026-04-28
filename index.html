@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mukil Fabrics – Premium Pleated Maxi Dresses</title>
+  <meta name="description" content="Shop Mukil Fabrics for trendy, vibrant pleated maxi dresses. Direct from manufacturer at ₹1499.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* Prevent FOUC and ensure icons load smoothly */
+    [data-icon] { display: inline-block; width: 1em; height: 1em; stroke-width: 0; stroke: currentColor; fill: currentColor; }
+  </style>
+</head>
+<body class="light-mode">
+  
+  <!-- ROTATING ANNOUNCEMENT BAR -->
+  <div class="announcement-bar" id="announcementBar">
+    <div class="announcement-track" id="announcementTrack">
+      <div class="announcement-slide">Free shipping on all prepaid orders above ₹999 🚚</div>
+      <div class="announcement-slide">Express Shipping on all Orders ⚡</div>
+      <div class="announcement-slide">Your first fit, but make it discounted! 10% OFF with code: WELCOM10 ✨</div>
+      <div class="announcement-slide">Official Online Store — No WhatsApp Orders 🛍️</div>
+    </div>
+  </div>
+
+  <!-- HEADER & MEGA MENU -->
+  <header class="header">
+    <div class="header-container">
+      <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+      
+      <a href="#" class="logo">Mukil <span class="gradient-text">Fabrics</span></a>
+
+      <nav class="nav" id="mainNav">
+        <ul class="nav-links">
+          <li><a href="#" class="active">Home</a></li>
+          <li><a href="#new">New</a></li>
+          <li class="has-mega-menu">
+            <a href="#shop">Shop <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></a>
+            <div class="mega-menu">
+              <div class="mega-menu-inner">
+                <div class="mega-col">
+                  <h3>Dresses</h3>
+                  <a href="#">New In</a>
+                  <a href="#">Trending Now</a>
+                  <a href="#">Maxi Dresses</a>
+                  <a href="#">Midi Dresses</a>
+                  <a href="#">View All</a>
+                </div>
+                <div class="mega-col">
+                  <h3>Kids Collection</h3>
+                  <a href="#">Party Wear</a>
+                  <a href="#">Casual Wear</a>
+                  <a href="#">Trending</a>
+                </div>
+                <div class="mega-col">
+                  <h3>Shop by Price</h3>
+                  <a href="#">Under ₹1499</a>
+                  <a href="#">₹1499 Specials</a>
+                  <a href="#">Premium Collection</a>
+                </div>
+                <div class="mega-col mega-promo">
+                  <img src="images/dress_magenta.png" alt="Promo">
+                  <div class="promo-text">
+                    <h4>Bestsellers</h4>
+                    <p>Shop our most loved styles</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li><a href="#collections">Collections</a></li>
+          <li><a href="#reviews">Reviews</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-icons">
+        <button aria-label="Search" class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
+        <button aria-label="Account" class="icon-btn hide-mobile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></button>
+        <button aria-label="Cart" class="icon-btn cart-btn" id="cartBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- SPLIT HERO -->
+    <section class="hero-full" id="home">
+      <div class="hero-bg animate-on-load">
+        <img src="images/hero_banner.jpg" alt="Vibrant Pleated Maxi Dresses">
+      </div>
+      <div class="container hero-container">
+        <div class="hero-content-wrapper">
+          <div class="hero-text-content">
+            <span class="hero-tag reveal-up animate-on-load delay-1">New Collection</span>
+            <h1 class="hero-main-title reveal-up animate-on-load delay-2">Wear the Colour<br><span class="animated-gradient-text">of Confidence</span></h1>
+            <p class="hero-desc reveal-up animate-on-load delay-3">Premium In-House Manufacturing. Direct to You. Discover our signature pleated maxi dresses starting at ₹1499.</p>
+            <div class="hero-actions reveal-up animate-on-load delay-3">
+              <a href="#shop" class="btn-primary">Shop Now</a>
+              <a href="#collections" class="btn-outline">View Collections</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHOP BY COLLECTION GRID -->
+    <section class="section-padding" id="collections">
+      <div class="container">
+        <h2 class="section-title text-center reveal-up animate-on-scroll">Shop By Collection</h2>
+        <div class="collection-grid reveal-up animate-on-scroll delay-1">
+          <a href="#shop" class="col-card large">
+            <img src="images/dress_1_main.jpg" alt="Maxi Dresses">
+            <div class="col-overlay">
+              <h3>Maxi Dresses</h3>
+              <span>Shop Now →</span>
+            </div>
+          </a>
+          <a href="#shop" class="col-card">
+            <img src="images/dress_2_main.jpg" alt="New Arrivals">
+            <div class="col-overlay">
+              <h3>New Arrivals</h3>
+            </div>
+          </a>
+          <a href="#shop" class="col-card">
+            <img src="images/dress_3_main.jpg" alt="Trending Now">
+            <div class="col-overlay">
+              <h3>Trending Now</h3>
+            </div>
+          </a>
+          <a href="#shop" class="col-card wide">
+            <img src="images/dress_4_main.jpg" alt="Exclusive Offers">
+            <div class="col-overlay">
+              <h3>₹1499 Specials</h3>
+              <span>View Offers →</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- HORIZONTAL TABS & PRODUCT GRID -->
+    <section class="section-padding bg-light" id="shop">
+      <div class="container">
+        <h2 class="section-title text-center reveal-up animate-on-scroll">Trending Products</h2>
+        
+        <div class="tab-scroll-container reveal-up animate-on-scroll delay-1">
+          <ul class="category-tabs" id="categoryTabs">
+            <li class="tab-item active" data-filter="all">All</li>
+            <li class="tab-item" data-filter="new">New In</li>
+            <li class="tab-item" data-filter="bestseller">Best Sellers</li>
+            <li class="tab-item" data-filter="maxi">Maxi Dresses</li>
+            <li class="tab-item" data-filter="kids">Kids Wear</li>
+          </ul>
+        </div>
+
+        <!-- Products injected by JS -->
+        <div class="product-grid" id="productGrid"></div>
+        
+        <div class="text-center mt-3">
+          <button id="viewAllBtn" class="btn-outline">View All Products</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRUST BADGES -->
+    <section class="trust-bar section-padding">
+      <div class="container">
+        <div class="trust-grid reveal-up animate-on-scroll">
+          <div class="trust-item">
+            <div class="trust-icon"><img src="https://unpkg.com/emoji-datasource-apple@15.0.1/img/apple/64/2728.png" alt="✨" class="apple-emoji"></div>
+            <h4>Premium Quality</h4>
+            <p>Finest pleated fabrics</p>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon"><img src="https://unpkg.com/emoji-datasource-apple@15.0.1/img/apple/64/1f3ed.png" alt="🏭" class="apple-emoji"></div>
+            <h4>Own Manufacturing</h4>
+            <p>Direct from our factory</p>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon"><img src="https://unpkg.com/emoji-datasource-apple@15.0.1/img/apple/64/1f69a.png" alt="🚚" class="apple-emoji"></div>
+            <h4>Fast Shipping</h4>
+            <p>Express delivery available</p>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon"><img src="https://unpkg.com/emoji-datasource-apple@15.0.1/img/apple/64/1f496.png" alt="💖" class="apple-emoji"></div>
+            <h4>101K+ Family</h4>
+            <p>Loved on Instagram</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INSTAGRAM FEED -->
+    <section class="section-padding bg-light">
+      <div class="container">
+        <div class="text-center mb-2 reveal-up animate-on-scroll">
+          <h2 class="section-title">Join Our Community</h2>
+          <p class="section-subtitle">Follow @mukilfabrics for daily style inspiration</p>
+        </div>
+        <div class="insta-grid reveal-up animate-on-scroll delay-1">
+          <a href="#" class="insta-post"><img src="images/dress_1_main.jpg" alt="Instagram"><div class="insta-overlay"><img src="https://unpkg.com/emoji-datasource-apple@15.0.1/img/apple/64/2764-fe0f.png" alt="❤️" class="apple-emoji"> 1.2k</div></a>
+          <a href="#" class="insta-post"><img src="images/dress_2_side.jpg" alt="Instagram"><div class="insta-overlay"><img src="https://unpkg.com/emoji-datasource-apple@15.0.1/img/apple/64/2764-fe0f.png" alt="❤️" class="apple-emoji"> 856</div></a>
+          <a href="#" class="insta-post"><img src="images/dress_3_back.jpg" alt="Instagram"><div class="insta-overlay"><img src="https://unpkg.com/emoji-datasource-apple@15.0.1/img/apple/64/2764-fe0f.png" alt="❤️" class="apple-emoji"> 2.4k</div></a>
+          <a href="#" class="insta-post"><img src="images/dress_4_main.jpg" alt="Instagram"><div class="insta-overlay"><img src="https://unpkg.com/emoji-datasource-apple@15.0.1/img/apple/64/2764-fe0f.png" alt="❤️" class="apple-emoji"> 945</div></a>
+          <a href="#" class="insta-post"><img src="images/dress_1_back.jpg" alt="Instagram"><div class="insta-overlay"><img src="https://unpkg.com/emoji-datasource-apple@15.0.1/img/apple/64/2764-fe0f.png" alt="❤️" class="apple-emoji"> 1.8k</div></a>
+          <a href="#" class="insta-post"><img src="images/dress_3_main.jpg" alt="Instagram"><div class="insta-overlay"><img src="https://unpkg.com/emoji-datasource-apple@15.0.1/img/apple/64/2764-fe0f.png" alt="❤️" class="apple-emoji"> 3.1k</div></a>
+        </div>
+        <div class="text-center mt-2">
+          <a href="https://instagram.com/mukilfabrics" target="_blank" class="btn-primary">Follow on Instagram</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- HAY CLOTHING INSPIRED FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col brand-col">
+          <a href="#" class="logo">Mukil <span class="gradient-text">Fabrics</span></a>
+          <p>Premium in-house manufactured vibrant pleated maxi dresses. Bringing you the colour of confidence, direct to your doorstep.</p>
+          <div class="social-links">
+            <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+            <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+            <a href="#" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></a>
+          </div>
+        </div>
+        
+        <div class="footer-col">
+          <h4>Shop</h4>
+          <ul class="footer-links">
+            <li><a href="#">New Arrivals</a></li>
+            <li><a href="#">Best Sellers</a></li>
+            <li><a href="#">Maxi Dresses</a></li>
+            <li><a href="#">Kids Collection</a></li>
+            <li><a href="#">₹1499 Specials</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-col">
+          <h4>Help & Info</h4>
+          <ul class="footer-links">
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Track Order</a></li>
+            <li><a href="#">Shipping Policy</a></li>
+            <li><a href="#">Returns & Exchanges</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-col">
+          <h4>Stay in the loop</h4>
+          <p>Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.</p>
+          <form class="newsletter-form">
+            <input type="email" placeholder="Enter your email" required>
+            <button type="submit">→</button>
+          </form>
+          <div class="payment-icons mt-2">
+            <span>Secure Payments</span>
+            <div class="icons">
+              <!-- Placeholders for payment icons -->
+              <div class="pay-icon">UPI</div>
+              <div class="pay-icon">VISA</div>
+              <div class="pay-icon">MC</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 Mukil Fabrics. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- PRODUCT QUICK VIEW MODAL (NEW) -->
+  <div class="quickview-modal" id="quickViewModal">
+    <div class="quickview-backdrop" id="quickViewBackdrop"></div>
+    <div class="quickview-content">
+      <button class="quickview-close" id="quickViewClose" aria-label="Close modal">×</button>
+      <div class="quickview-grid" id="quickViewBody">
+        <!-- Content injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- CART DRAWER (Existing structure, updated styling) -->
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="cart-header">
+      <h2>Your Bag <span id="cartCountDrawer">(0)</span></h2>
+      <button class="close-cart" id="closeCart">×</button>
+    </div>
+    
+    <!-- Free shipping progress -->
+    <div class="shipping-progress-container">
+      <p class="shipping-message" id="shippingMessage">Add ₹999 for free shipping!</p>
+      <div class="progress-bar"><div class="progress-fill" id="shippingProgress"></div></div>
+    </div>
+
+    <div class="cart-items" id="cartItems">
+      <!-- Items inject via JS -->
+      <div class="empty-cart text-center" style="display:none;" id="emptyCartMsg">
+        <p>Your bag is empty.</p>
+        <a href="#shop" class="btn-primary mt-1" id="startShoppingBtn">Start Shopping</a>
+      </div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span>Subtotal</span>
+        <span id="cartTotal">₹0</span>
+      </div>
+      <p class="tax-note">Taxes included. Shipping calculated at checkout.</p>
+      <button class="btn-primary cart-checkout-btn" id="checkoutBtn" disabled>Proceed to Checkout</button>
+    </div>
+  </div>
+
+  <!-- CHECKOUT MODAL -->
+  <div class="quickview-modal" id="checkoutModal">
+    <div class="quickview-backdrop" id="checkoutBackdrop"></div>
+    <div class="quickview-content" style="max-width: 500px; padding: 30px;">
+      <button class="quickview-close" id="checkoutClose" aria-label="Close modal">×</button>
+      <h2>Checkout Details</h2>
+      <form id="checkoutForm" style="margin-top: 20px;">
+        <div class="form-group" style="margin-bottom: 15px;">
+          <label style="display:block; margin-bottom: 5px;">Full Name</label>
+          <input type="text" id="checkoutName" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        <div class="form-group" style="margin-bottom: 15px;">
+          <label style="display:block; margin-bottom: 5px;">Phone Number</label>
+          <input type="tel" id="checkoutPhone" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label style="display:block; margin-bottom: 5px;">Delivery Address</label>
+          <textarea id="checkoutAddress" required rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit;"></textarea>
+        </div>
+        <button type="submit" class="btn-primary" style="width: 100%;">Place Order (<span id="checkoutTotalBtn">₹0</span>)</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- NOTIFICATION TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
