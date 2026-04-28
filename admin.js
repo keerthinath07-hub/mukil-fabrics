@@ -108,8 +108,41 @@ document.addEventListener('DOMContentLoaded', () => {
   // Firestore Sync
   console.log("🔥 Admin: Initializing Firestore Sync...");
   showDbBanner('warning', '⏳ Connecting to Firebase database...');
+  
+  let isConnected = false;
+  
+  // Fallback timeout for local firewall blocking
+  setTimeout(() => {
+    if (!isConnected) {
+      console.warn("⚠️ Admin: Database connection blocked by firewall. Loading offline fallback data...");
+      showDbBanner('warning', '⚠️ Firewall Blocked Connection. Showing Offline Preview.');
+      
+      const loader = document.getElementById('globalLoader');
+      if (loader && !loader.classList.contains('hidden')) {
+        loader.classList.add('hidden');
+      }
+      
+      // Load the 12 photos as fallback
+      products = [
+        { id: 'p1', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️.jpg'], sizes: [], category: ['all', 'maxi', 'new'], tags: ['New', 'Sale'] },
+        { id: 'p2', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (1).jpg'], sizes: [], category: ['all', 'maxi'], tags: ['Bestseller'] },
+        { id: 'p3', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (2).jpg'], sizes: [], category: ['all', 'maxi'], tags: [] },
+        { id: 'p4', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (3).jpg'], sizes: [], category: ['all', 'maxi'], tags: ['Sale'] },
+        { id: 'p5', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (4).jpg'], sizes: [], category: ['all', 'maxi', 'bestseller'], tags: ['Trending'] },
+        { id: 'p6', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (5).jpg'], sizes: [], category: ['all', 'maxi'], tags: [] },
+        { id: 'p7', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (7).jpg'], sizes: [], category: ['all', 'maxi'], tags: ['New'] },
+        { id: 'p8', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (8).jpg'], sizes: [], category: ['all', 'maxi'], tags: [] },
+        { id: 'p9', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (9).jpg'], sizes: [], category: ['all', 'maxi', 'new'], tags: ['Sale'] },
+        { id: 'p10', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (10).jpg'], sizes: [], category: ['all', 'maxi'], tags: [] },
+        { id: 'p11', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (11).jpg'], sizes: [], category: ['all', 'maxi'], tags: ['Trending'] },
+        { id: 'p12', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (12).jpg'], sizes: [], category: ['all', 'maxi'], tags: [] }
+      ];
+      renderTable();
+    }
+  }, 2000);
 
   onSnapshot(collection(db, 'mukil_products'), (snapshot) => {
+    isConnected = true;
     console.log("📦 Admin: Products snapshot received. Count:", snapshot.size);
     showDbBanner('success', '✅ Connected to Firebase! Database is live.');
     
