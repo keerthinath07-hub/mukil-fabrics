@@ -9,21 +9,6 @@
   <div id="log"></div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBdi6rU_eGbrdbenE5LQp-bgC58QkYQ-UQ",
-      authDomain: "mukil-fabrics.firebaseapp.com",
-      projectId: "mukil-fabrics",
-      storageBucket: "mukil-fabrics.firebasestorage.app",
-      messagingSenderId: "486533319432",
-      appId: "1:486533319432:web:093be705ef9d96a4647abd",
-      measurementId: "G-RVMHF7LXTQ"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app, "(default)");
     const logDiv = document.getElementById('log');
 
     window.onerror = function(msg) {
@@ -53,30 +38,41 @@
       "Pleated maxi with lining ❤️ (12).jpg"
     ];
 
-    const productsCol = collection(db, 'mukil_products');
+    const REST_URL = "https://firestore.googleapis.com/v1/projects/mukil-fabrics/databases/(default)/documents/mukil_products";
 
     async function uploadAll() {
       for (let i = 0; i < fileNames.length; i++) {
-        const product = {
-          name: "Pleated Maxi with Lining",
-          price: 1499,
-          originalPrice: 1999,
-          discount: "25%",
-          images: [`photos/${fileNames[i]}`],
-          category: ["all", "maxi", "new"],
-          tags: ["New", "Sale"],
-          sizes: [
-            { size: "S", available: true, quantity: 10 },
-            { size: "M", available: true, quantity: 10 },
-            { size: "L", available: true, quantity: 10 },
-            { size: "XL", available: true, quantity: 10 },
-            { size: "XXL", available: true, quantity: 10 }
-          ],
-          reviews: Math.floor(Math.random() * 50) + 10
+        // Construct the Firestore REST payload format
+        const payload = {
+          fields: {
+            name: { stringValue: "Pleated Maxi with Lining" },
+            price: { integerValue: 1499 },
+            originalPrice: { integerValue: 1999 },
+            discount: { stringValue: "25%" },
+            images: { arrayValue: { values: [ { stringValue: `photos/${fileNames[i]}` } ] } },
+            category: { arrayValue: { values: [ { stringValue: "all" }, { stringValue: "maxi" }, { stringValue: "new" } ] } },
+            tags: { arrayValue: { values: [ { stringValue: "New" }, { stringValue: "Sale" } ] } },
+            sizes: { arrayValue: { values: [
+              { mapValue: { fields: { size: { stringValue: "S" }, available: { booleanValue: true }, quantity: { integerValue: 10 } } } },
+              { mapValue: { fields: { size: { stringValue: "M" }, available: { booleanValue: true }, quantity: { integerValue: 10 } } } },
+              { mapValue: { fields: { size: { stringValue: "L" }, available: { booleanValue: true }, quantity: { integerValue: 10 } } } },
+              { mapValue: { fields: { size: { stringValue: "XL" }, available: { booleanValue: true }, quantity: { integerValue: 10 } } } },
+              { mapValue: { fields: { size: { stringValue: "XXL" }, available: { booleanValue: true }, quantity: { integerValue: 10 } } } }
+            ] } },
+            reviews: { integerValue: Math.floor(Math.random() * 50) + 10 }
+          }
         };
 
         try {
-          await addDoc(productsCol, product);
+          const response = await fetch(REST_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP Error ${response.status}: ` + await response.text());
+          }
           log(`✅ Added product ${i+1}: ${fileNames[i]}`);
         } catch (err) {
           log(`❌ Failed to add product ${i+1}: ${err.message}`);
