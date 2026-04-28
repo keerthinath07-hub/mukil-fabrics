@@ -102,16 +102,21 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- FIRESTORE SYNC ---
 async function initFirestore() {
   const productsCol = collection(db, 'mukil_products');
+  console.log("🔥 Initializing Firestore Sync...");
   
-  // Real-time listener
   onSnapshot(productsCol, (snapshot) => {
+    console.log("📦 Firestore Snapshot received. Empty:", snapshot.empty);
     if (snapshot.empty) {
-      // Seed if empty
+      console.log("🌱 Database is empty. Seeding default products...");
       seedDatabase();
     } else {
       products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      console.log("✅ Products loaded from Cloud:", products.length);
       renderProducts(document.querySelector('.tab-item.active')?.dataset.filter || 'all');
     }
+  }, (error) => {
+    console.error("❌ Firestore Subscription Error:", error);
+    showToast("Database error. Please check console.");
   });
 }
 

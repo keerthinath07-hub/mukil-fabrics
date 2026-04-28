@@ -35,14 +35,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const ordersStats = document.getElementById('ordersStats');
 
   // Firestore Sync
+  console.log("🔥 Admin: Initializing Firestore Sync...");
   onSnapshot(collection(db, 'mukil_products'), (snapshot) => {
+    console.log("📦 Admin: Products snapshot received.");
     products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     renderTable();
+  }, (error) => {
+    console.error("❌ Admin: Products sync error:", error);
   });
 
   onSnapshot(collection(db, 'mukil_orders'), (snapshot) => {
+    console.log("📦 Admin: Orders snapshot received.");
     orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     renderOrders();
+  }, (error) => {
+    console.error("❌ Admin: Orders sync error:", error);
   });
 
   // Event Listeners
