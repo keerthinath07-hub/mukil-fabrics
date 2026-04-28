@@ -332,15 +332,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (fileInput.files.length > 0) {
         saveBtn.textContent = 'Uploading Images...';
-        const uploadPromises = Array.from(fileInput.files).map(async (file) => {
-          const uniqueName = Date.now() + '-' + file.name;
-          const storageRef = ref(storage, 'mukil_products_images/' + uniqueName);
-          await uploadBytes(storageRef, file);
-          return await getDownloadURL(storageRef);
-        });
         
-        const uploadedUrls = await Promise.all(uploadPromises);
-        finalImageUrls = [...finalImageUrls, ...uploadedUrls];
+        try {
+          const uploadPromises = Array.from(fileInput.files).map(async (file) => {
+            const uniqueName = Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+            const storageRef = ref(storage, 'mukil_products_images/' + uniqueName);
+            console.log('Uploading file:', uniqueName);
+            await uploadBytes(storageRef, file);
+            console.log('File uploaded. Getting URL...');
+            return await getDownloadURL(storageRef);
+          });
+          
+          // 15-second timeout for image uploads to prevent hanging
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error("Image upload timed out (15s).")), 15000)
+          );
+
+          const uploadedUrls = await Promise.race([
+            Promise.all(uploadPromises),
+            timeoutPromise
+          ]);
+          
+          finalImageUrls = [...finalImageUrls, ...uploadedUrls];
+        } catch (uploadErr) {
+          console.error("Storage Error:", uploadErr);
+          throw new Error("Failed to upload images. " + uploadErr.message + "\n\nDid you click 'Get Started' in the Firebase Storage tab and set your Storage Rules to allow write?");
+        }
       }
       
       product.images = finalImageUrls;
