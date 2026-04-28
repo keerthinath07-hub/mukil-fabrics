@@ -1,6 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, onSnapshot, doc, updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBdi6rU_eGbrdbenE5LQp-bgC58QkYQ-UQ",
@@ -14,7 +13,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app, "(default)");
-const storage = getStorage(app);
 
 document.addEventListener('DOMContentLoaded', () => {
   let products = [];
@@ -319,48 +317,12 @@ document.addEventListener('DOMContentLoaded', () => {
         price: parseInt(document.getElementById('productPrice').value) || 0,
         originalPrice: document.getElementById('productOriginalPrice').value ? parseInt(document.getElementById('productOriginalPrice').value) : null,
         discount: document.getElementById('productDiscount').value.trim() || null,
+        images: document.getElementById('productImages').value.split(',').map(s => s.trim()).filter(s => s),
         category: document.getElementById('productCategory').value.split(',').map(s => s.trim()).filter(s => s),
         tags: document.getElementById('productTags').value.split(',').map(s => s.trim()).filter(s => s),
         sizes: sizes,
         reviews: reviews
       };
-
-      // Handle Image Uploads
-      const fileInput = document.getElementById('productImageUpload');
-      const textInput = document.getElementById('productImages').value.split(',').map(s => s.trim()).filter(s => s);
-      let finalImageUrls = [...textInput];
-
-      if (fileInput.files.length > 0) {
-        saveBtn.textContent = 'Uploading Images...';
-        
-        try {
-          const uploadPromises = Array.from(fileInput.files).map(async (file) => {
-            const uniqueName = Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9.]/g, '_');
-            const storageRef = ref(storage, 'mukil_products_images/' + uniqueName);
-            console.log('Uploading file:', uniqueName);
-            await uploadBytes(storageRef, file);
-            console.log('File uploaded. Getting URL...');
-            return await getDownloadURL(storageRef);
-          });
-          
-          // 15-second timeout for image uploads to prevent hanging
-          const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error("Image upload timed out (15s).")), 15000)
-          );
-
-          const uploadedUrls = await Promise.race([
-            Promise.all(uploadPromises),
-            timeoutPromise
-          ]);
-          
-          finalImageUrls = [...finalImageUrls, ...uploadedUrls];
-        } catch (uploadErr) {
-          console.error("Storage Error:", uploadErr);
-          throw new Error("Failed to upload images. " + uploadErr.message + "\n\nDid you click 'Get Started' in the Firebase Storage tab and set your Storage Rules to allow write?");
-        }
-      }
-      
-      product.images = finalImageUrls;
 
       console.log('💾 Triggering save (isNew=' + isNew + ')...');
 
