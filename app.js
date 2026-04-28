@@ -243,6 +243,10 @@ function renderProducts(filterCategory) {
       </div>
     `;
   }).join('');
+  } catch (err) {
+    console.error("Error in renderProducts:", err);
+    productGrid.innerHTML = '<p style="text-align:center; padding:20px; color:red;">Error loading products.</p>';
+  }
 }
 
 // --- QUICK VIEW MODAL ---
