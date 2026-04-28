@@ -1,5 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, onSnapshot, doc, updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, onSnapshot, doc, updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBdi6rU_eGbrdbenE5LQp-bgC58QkYQ-UQ",
@@ -12,7 +12,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = getFirestore(app, "(default)");
 
 document.addEventListener('DOMContentLoaded', () => {
   let products = [];
@@ -34,14 +34,66 @@ document.addEventListener('DOMContentLoaded', () => {
   const ordersTableBody = document.getElementById('ordersTableBody');
   const ordersStats = document.getElementById('ordersStats');
 
+  // Check if running via file:// (ES Modules won't work)
+  if (window.location.protocol === 'file:') {
+    alert("CRITICAL: ES Modules (used for Firebase) do not work when opening HTML files directly via 'file://'. Please use a local server (e.g., Live Server in VS Code, or 'npx serve').");
+  }
+
+  // --- DB Status Banner ---
+  function showDbBanner(type, message) {
+    let banner = document.getElementById('dbStatusBanner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'dbStatusBanner';
+      banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;padding:14px 20px;font-size:14px;font-weight:500;text-align:center;transition:all 0.3s;';
+      document.body.prepend(banner);
+    }
+    if (type === 'error') {
+      banner.style.background = '#e74c3c';
+      banner.style.color = '#fff';
+      banner.innerHTML = message;
+    } else if (type === 'success') {
+      banner.style.background = '#27ae60';
+      banner.style.color = '#fff';
+      banner.innerHTML = message;
+      setTimeout(() => banner.remove(), 4000);
+    } else if (type === 'warning') {
+      banner.style.background = '#f39c12';
+      banner.style.color = '#fff';
+      banner.innerHTML = message;
+    }
+  }
+
   // Firestore Sync
   console.log("🔥 Admin: Initializing Firestore Sync...");
+  showDbBanner('warning', '⏳ Connecting to Firebase database...');
+
   onSnapshot(collection(db, 'mukil_products'), (snapshot) => {
-    console.log("📦 Admin: Products snapshot received.");
-    products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    renderTable();
+    console.log("📦 Admin: Products snapshot received. Count:", snapshot.size);
+    showDbBanner('success', '✅ Connected to Firebase! Database is live.');
+    try {
+      products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderTable();
+    } catch (err) {
+      console.error("❌ Admin: Error processing products snapshot:", err);
+    }
   }, (error) => {
     console.error("❌ Admin: Products sync error:", error);
+    if (error.code === 'not-found') {
+      showDbBanner('error',
+        '❌ <strong>Firestore Database Not Found!</strong> &nbsp;| '
+        + 'Go to <a href="https://console.firebase.google.com/project/mukil-fabrics/firestore" target="_blank" style="color:#fff;text-decoration:underline;">Firebase Console → Firestore Database</a> '
+        + 'and click <strong>"Create Database"</strong> → choose <strong>"Test Mode"</strong> → select any region → Done.'
+      );
+    } else if (error.code === 'permission-denied') {
+      showDbBanner('error',
+        '❌ <strong>Permission Denied!</strong> &nbsp;| '
+        + 'Go to <a href="https://console.firebase.google.com/project/mukil-fabrics/firestore/rules" target="_blank" style="color:#fff;text-decoration:underline;">Firestore Rules</a> '
+        + 'and change <code style="background:rgba(0,0,0,0.2);padding:2px 5px;">allow read, write: if false</code> to <code style="background:rgba(0,0,0,0.2);padding:2px 5px;">allow read, write: if true</code>'
+      );
+    } else {
+      showDbBanner('error', '❌ Database error: ' + error.message + ' | Check browser console (F12) for details.');
+    }
   });
 
   onSnapshot(collection(db, 'mukil_orders'), (snapshot) => {
@@ -83,56 +135,78 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Functions
   function renderTable() {
-    productsTableBody.innerHTML = products.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No products found.</td></tr>' : '';
-    products.forEach(product => {
-      const sizesHTML = product.sizes.map(s => {
-        const qty = s.quantity !== undefined ? s.quantity : (s.available ? 10 : 0);
-        return `<span class="badge ${qty > 0 ? 'available' : 'unavailable'}">${s.size} (${qty})</span>`;
-      }).join('');
+    try {
+      productsTableBody.innerHTML = products.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No products found.</td></tr>' : '';
+      products.forEach(product => {
+        const sizes = product.sizes || [];
+        const sizesHTML = sizes.map(s => {
+          const qty = s.quantity !== undefined ? s.quantity : (s.available ? 10 : 0);
+          return `<span class="badge ${qty > 0 ? 'available' : 'unavailable'}">${s.size} (${qty})</span>`;
+        }).join('');
 
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><img src="${product.images[0]}" class="product-img-thumb" onerror="this.src='https://via.placeholder.com/50x60'"></td>
-        <td><strong>${product.name}</strong><br><small class="text-muted">${product.category.join(', ')}</small></td>
-        <td>₹${product.price}</td>
-        <td>${product.discount || '-'}</td>
-        <td>${sizesHTML}</td>
-        <td class="actions">
-          <button class="btn-edit" onclick="editProduct('${product.id}')">Edit</button>
-          <button class="btn-delete" onclick="deleteProduct('${product.id}')">Delete</button>
-        </td>
-      `;
-      productsTableBody.appendChild(tr);
-    });
+        const categories = Array.isArray(product.category) ? product.category : [product.category || 'all'];
+        const images = Array.isArray(product.images) ? product.images : [product.images || ''];
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><img src="${images[0]}" class="product-img-thumb" onerror="this.src='https://via.placeholder.com/50x60'"></td>
+          <td><strong>${product.name || 'Unnamed Product'}</strong><br><small class="text-muted">${categories.join(', ')}</small></td>
+          <td>₹${product.price || 0}</td>
+          <td>${product.discount || '-'}</td>
+          <td>${sizesHTML}</td>
+          <td class="actions">
+            <button class="btn-edit" onclick="editProduct('${product.id}')">Edit</button>
+            <button class="btn-delete" onclick="deleteProduct('${product.id}')">Delete</button>
+          </td>
+        `;
+        productsTableBody.appendChild(tr);
+      });
+    } catch (err) {
+      console.error("❌ Admin: Error rendering table:", err);
+      productsTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Error rendering table. Check console.</td></tr>`;
+    }
   }
 
   function renderOrders() {
-    ordersTableBody.innerHTML = orders.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No orders found.</td></tr>' : '';
-    let totalRev = 0, totalItems = 0;
-    [...orders].sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(order => {
-      totalRev += order.total;
-      let itemsHTML = '';
-      order.items.forEach(item => {
-        itemsHTML += `<div style="font-size:0.9em;">• ${item.name} <span class="badge" style="background:#eee;">${item.size}</span> x <strong>${item.qty}</strong></div>`;
-        totalItems += item.qty;
+    try {
+      ordersTableBody.innerHTML = orders.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No orders found.</td></tr>' : '';
+      let totalRev = 0, totalItems = 0;
+      
+      const sortedOrders = [...orders].filter(o => o.date).sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      sortedOrders.forEach(order => {
+        totalRev += (order.total || 0);
+        let itemsHTML = '';
+        const items = order.items || [];
+        items.forEach(item => {
+          itemsHTML += `<div style="font-size:0.9em;">• ${item.name || 'Item'} <span class="badge" style="background:#eee;">${item.size || 'N/A'}</span> x <strong>${item.qty || 1}</strong></div>`;
+          totalItems += (item.qty || 1);
+        });
+
+        const orderDate = order.date ? new Date(order.date).toLocaleString() : 'N/A';
+        const customer = order.customer || { name: 'Unknown', phone: 'N/A', address: 'N/A' };
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><small>${orderDate}</small></td>
+          <td><strong>${customer.name}</strong><br><small>${customer.phone}</small><br><small>${customer.address}</small></td>
+          <td>${itemsHTML}</td>
+          <td><strong>₹${order.total || 0}</strong></td>
+        `;
+        ordersTableBody.appendChild(tr);
       });
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><small>${new Date(order.date).toLocaleString()}</small></td>
-        <td><strong>${order.customer.name}</strong><br><small>${order.customer.phone}</small><br><small>${order.customer.address}</small></td>
-        <td>${itemsHTML}</td>
-        <td><strong>₹${order.total}</strong></td>
+      ordersStats.innerHTML = `
+        <div style="background:#fff; padding:15px; border:1px solid #eee; border-radius:8px; flex:1;"><div>Revenue</div><div style="font-size:1.5em; font-weight:600;">₹${totalRev}</div></div>
+        <div style="background:#fff; padding:15px; border:1px solid #eee; border-radius:8px; flex:1;"><div>Items Sold</div><div style="font-size:1.5em; font-weight:600;">${totalItems}</div></div>
+        <div style="background:#fff; padding:15px; border:1px solid #eee; border-radius:8px; flex:1;"><div>Orders</div><div style="font-size:1.5em; font-weight:600;">${orders.length}</div></div>
       `;
-      ordersTableBody.appendChild(tr);
-    });
-    ordersStats.innerHTML = `
-      <div style="background:#fff; padding:15px; border:1px solid #eee; border-radius:8px; flex:1;"><div>Revenue</div><div style="font-size:1.5em; font-weight:600;">₹${totalRev}</div></div>
-      <div style="background:#fff; padding:15px; border:1px solid #eee; border-radius:8px; flex:1;"><div>Items Sold</div><div style="font-size:1.5em; font-weight:600;">${totalItems}</div></div>
-      <div style="background:#fff; padding:15px; border:1px solid #eee; border-radius:8px; flex:1;"><div>Orders</div><div style="font-size:1.5em; font-weight:600;">${orders.length}</div></div>
-    `;
+    } catch (err) {
+      console.error("❌ Admin: Error rendering orders:", err);
+      ordersTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">Error rendering orders. Check console.</td></tr>`;
+    }
   }
 
-  window.openModal = function(productId = null) {
+  function openModal(productId = null) {
     productForm.reset();
     if (productId) {
       modalTitle.textContent = 'Edit Product';
@@ -158,35 +232,77 @@ document.addEventListener('DOMContentLoaded', () => {
     productModal.classList.add('active');
   }
 
-  window.closeModal = function() { productModal.classList.remove('active'); }
-
-  async function saveProduct() {
-    const idField = document.getElementById('productId').value;
-    const isNew = !idField;
-    const id = isNew ? 'p' + Date.now() : idField;
-    const sizes = ['S', 'M', 'L', 'XL', 'XXL'].map(size => {
-      const qty = parseInt(document.getElementById(`qty${size}`).value) || 0;
-      return { size, available: qty > 0, quantity: qty };
-    });
-
-    const product = {
-      name: document.getElementById('productName').value,
-      price: parseInt(document.getElementById('productPrice').value),
-      originalPrice: document.getElementById('productOriginalPrice').value ? parseInt(document.getElementById('productOriginalPrice').value) : null,
-      discount: document.getElementById('productDiscount').value || null,
-      images: document.getElementById('productImages').value.split(',').map(s => s.trim()).filter(s => s),
-      category: document.getElementById('productCategory').value.split(',').map(s => s.trim()).filter(s => s),
-      tags: document.getElementById('productTags').value.split(',').map(s => s.trim()).filter(s => s),
-      sizes: sizes,
-      reviews: isNew ? 0 : products.find(p => p.id === id).reviews
-    };
-
-    await setDoc(doc(db, 'mukil_products', id), product);
-    closeModal();
+  function closeModal() {
+    productModal.classList.remove('active');
   }
 
-  window.editProduct = (id) => openModal(id);
-  window.deleteProduct = async (id) => {
-    if (confirm('Delete this product?')) await deleteDoc(doc(db, 'mukil_products', id));
-  };
+  async function saveProduct() {
+    const saveBtn = productForm.querySelector('button[type="submit"]');
+    const originalBtnText = saveBtn.textContent;
+
+    try {
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      const idField = document.getElementById('productId').value.trim();
+      const isNew = !idField;
+      
+      const sizes = ['S', 'M', 'L', 'XL', 'XXL'].map(size => {
+        const input = document.getElementById(`qty${size}`);
+        const qty = parseInt(input ? input.value : 0) || 0;
+        return { size, available: qty > 0, quantity: qty };
+      });
+
+      const existingProduct = isNew ? null : products.find(p => p.id === idField);
+      const reviews = existingProduct ? (existingProduct.reviews || 0) : 0;
+
+      const product = {
+        name: document.getElementById('productName').value.trim(),
+        price: parseInt(document.getElementById('productPrice').value) || 0,
+        originalPrice: document.getElementById('productOriginalPrice').value ? parseInt(document.getElementById('productOriginalPrice').value) : null,
+        discount: document.getElementById('productDiscount').value.trim() || null,
+        images: document.getElementById('productImages').value.split(',').map(s => s.trim()).filter(s => s),
+        category: document.getElementById('productCategory').value.split(',').map(s => s.trim()).filter(s => s),
+        tags: document.getElementById('productTags').value.split(',').map(s => s.trim()).filter(s => s),
+        sizes: sizes,
+        reviews: reviews
+      };
+
+      console.log('💾 Triggering save (isNew=' + isNew + ')...');
+
+      // FIRE AND FORGET: We do not await the Firebase write here.
+      // This prevents the UI from freezing if the network drops the server's response.
+      // The local snapshot listener will instantly update the table anyway.
+      if (isNew) {
+        addDoc(collection(db, 'mukil_products'), product).catch(err => console.error("Background Write Error:", err));
+      } else {
+        setDoc(doc(db, 'mukil_products', idField), product).catch(err => console.error("Background Write Error:", err));
+      }
+
+      showDbBanner('success', '✅ Product saved successfully!');
+      closeModal();
+    } catch (err) {
+      console.error('❌ Error in save process:', err);
+      alert('❌ Error processing form:\n' + err.message);
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = originalBtnText;
+    }
+  }
+
+  function editProduct(id) {
+    openModal(id);
+  }
+
+  async function deleteProduct(id) {
+    if (confirm('Delete this product?')) {
+      await deleteDoc(doc(db, 'mukil_products', id));
+    }
+  }
+
+  // Assign to window for global access (from HTML onclicks)
+  window.openModal = openModal;
+  window.closeModal = closeModal;
+  window.editProduct = editProduct;
+  window.deleteProduct = deleteProduct;
 });

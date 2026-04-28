@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Firestore Test</title>
+</head>
+<body>
+  <h1>Firestore Write Test</h1>
+  <div id="output"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdi6rU_eGbrdbenE5LQp-bgC58QkYQ-UQ",
+      authDomain: "mukil-fabrics.firebaseapp.com",
+      projectId: "mukil-fabrics",
+      storageBucket: "mukil-fabrics.firebasestorage.app",
+      messagingSenderId: "486533319432",
+      appId: "1:486533319432:web:093be705ef9d96a4647abd",
+      measurementId: "G-RVMHF7LXTQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app, "(default)");
+    const output = document.getElementById('output');
+
+    function log(msg) {
+      console.log(msg);
+      output.innerHTML += msg + "<br>";
+    }
+
+    async function test() {
+      try {
+        log("Testing connection...");
+        let count = 0;
+        onSnapshot(collection(db, 'mukil_products'), (snap) => {
+          log("Snapshot received! Count: " + snap.size);
+        }, (err) => {
+          log("Snapshot error: " + err.message + " | code: " + err.code);
+        });
+
+        log("Waiting 3 seconds before write...");
+        await new Promise(r => setTimeout(r, 3000));
+
+        log("Attempting to write document...");
+        
+        // Race the write against a timeout
+        const writePromise = addDoc(collection(db, 'mukil_products'), { name: "Direct Write Test", time: Date.now() });
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("WRITE_TIMEOUT")), 10000));
+        
+        const docRef = await Promise.race([writePromise, timeoutPromise]);
+        log("Write SUCCESS! ID: " + docRef.id);
+      } catch (err) {
+        log("Write FAILED: " + err.message);
+      }
+    }
+
+    test();
+  </script>
+</body>
+</html>

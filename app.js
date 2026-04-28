@@ -1,5 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, onSnapshot, doc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, onSnapshot, doc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBdi6rU_eGbrdbenE5LQp-bgC58QkYQ-UQ",
@@ -12,7 +12,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = getFirestore(app, "(default)");
 
 // PRODUCT DATA
 const defaultProducts = [
@@ -58,6 +58,11 @@ const checkoutTotalBtn = document.getElementById('checkoutTotalBtn');
 
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
+  // Check if running via file:// (ES Modules won't work)
+  if (window.location.protocol === 'file:') {
+    alert("CRITICAL: ES Modules do not work when opening HTML files directly via 'file://'. Please use a local server (e.g., Live Server in VS Code).");
+  }
+
   initAnnouncementBar();
   initHeaderScroll();
   initMobileNav();
@@ -105,18 +110,26 @@ async function initFirestore() {
   console.log("🔥 Initializing Firestore Sync...");
   
   onSnapshot(productsCol, (snapshot) => {
-    console.log("📦 Firestore Snapshot received. Empty:", snapshot.empty);
+    console.log("📦 Firestore Snapshot received. Count:", snapshot.size);
     if (snapshot.empty) {
       console.log("🌱 Database is empty. Seeding default products...");
       seedDatabase();
     } else {
-      products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      console.log("✅ Products loaded from Cloud:", products.length);
-      renderProducts(document.querySelector('.tab-item.active')?.dataset.filter || 'all');
+      try {
+        products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        console.log("✅ Products loaded from Cloud:", products.length);
+        renderProducts(document.querySelector('.tab-item.active')?.dataset.filter || 'all');
+      } catch (err) {
+        console.error("❌ Error processing products:", err);
+      }
     }
   }, (error) => {
     console.error("❌ Firestore Subscription Error:", error);
-    showToast("Database error. Please check console.");
+    if (error.code === 'not-found') {
+      showToast("Firestore Database not found. Please create it in the Firebase Console.");
+    } else {
+      showToast("Database error. Please check console.");
+    }
   });
 }
 
@@ -187,9 +200,13 @@ function showToast(message) {
 
 function renderProducts(filterCategory) {
   if(!productGrid) return;
-  const filtered = filterCategory === 'all' ? products : products.filter(p => p.category.includes(filterCategory));
-  
-  productGrid.innerHTML = filtered.map(product => {
+  try {
+    const filtered = filterCategory === 'all' ? products : products.filter(p => {
+      const categories = Array.isArray(p.category) ? p.category : [p.category || 'all'];
+      return categories.includes(filterCategory);
+    });
+    
+    productGrid.innerHTML = filtered.map(product => {
     const sizesHTML = product.sizes.map(s => `
       <div>
         <input type="radio" name="size-${product.id}" id="size-${product.id}-${s.size}" value="${s.size}" class="size-radio" ${!s.available ? 'disabled' : ''}>
