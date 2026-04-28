@@ -5,8 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - Mukil Fabrics</title>
   <link rel="stylesheet" href="admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
+  <!-- Global Loader -->
+  <div id="globalLoader" class="global-loader">
+    <div class="spinner-ring"></div>
+    <div class="loader-text">Connecting to Secure Database...</div>
+  </div>
+
   <!-- Error Reporter -->
   <div id="error-reporter" style="display:none; background:red; color:white; padding:15px; position:fixed; top:0; left:0; right:0; z-index:99999;"></div>
   <script>
@@ -114,8 +121,10 @@
         </div>
 
         <div class="form-group">
-          <label for="productImages">Image URLs (comma separated)</label>
-          <input type="text" id="productImages" required placeholder="images/dress_1_main.jpg, images/dress_1_back.jpg">
+          <label>Product Images</label>
+          <div style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">Upload photos directly or paste URLs (comma separated)</div>
+          <input type="file" id="productImageUpload" multiple accept="image/*" style="margin-bottom: 10px; display: block;">
+          <input type="text" id="productImages" placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg">
         </div>
 
         <div class="form-row">

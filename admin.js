@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, onSnapshot, doc, updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBdi6rU_eGbrdbenE5LQp-bgC58QkYQ-UQ",
@@ -13,6 +14,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app, "(default)");
+const storage = getStorage(app);
 
 document.addEventListener('DOMContentLoaded', () => {
   let products = [];
@@ -112,6 +114,21 @@ document.addEventListener('DOMContentLoaded', () => {
   onSnapshot(collection(db, 'mukil_products'), (snapshot) => {
     console.log("📦 Admin: Products snapshot received. Count:", snapshot.size);
     showDbBanner('success', '✅ Connected to Firebase! Database is live.');
+    
+    // Hide the global buffering loader and trigger confetti
+    const loader = document.getElementById('globalLoader');
+    if (loader && !loader.classList.contains('hidden')) {
+      loader.classList.add('hidden');
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#2c3e50', '#e74c3c', '#f39c12', '#27ae60']
+        });
+      }
+    }
+
     try {
       products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       renderTable();
@@ -302,25 +319,42 @@ document.addEventListener('DOMContentLoaded', () => {
         price: parseInt(document.getElementById('productPrice').value) || 0,
         originalPrice: document.getElementById('productOriginalPrice').value ? parseInt(document.getElementById('productOriginalPrice').value) : null,
         discount: document.getElementById('productDiscount').value.trim() || null,
-        images: document.getElementById('productImages').value.split(',').map(s => s.trim()).filter(s => s),
         category: document.getElementById('productCategory').value.split(',').map(s => s.trim()).filter(s => s),
         tags: document.getElementById('productTags').value.split(',').map(s => s.trim()).filter(s => s),
         sizes: sizes,
         reviews: reviews
       };
 
+      // Handle Image Uploads
+      const fileInput = document.getElementById('productImageUpload');
+      const textInput = document.getElementById('productImages').value.split(',').map(s => s.trim()).filter(s => s);
+      let finalImageUrls = [...textInput];
+
+      if (fileInput.files.length > 0) {
+        saveBtn.textContent = 'Uploading Images...';
+        const uploadPromises = Array.from(fileInput.files).map(async (file) => {
+          const uniqueName = Date.now() + '-' + file.name;
+          const storageRef = ref(storage, 'mukil_products_images/' + uniqueName);
+          await uploadBytes(storageRef, file);
+          return await getDownloadURL(storageRef);
+        });
+        
+        const uploadedUrls = await Promise.all(uploadPromises);
+        finalImageUrls = [...finalImageUrls, ...uploadedUrls];
+      }
+      
+      product.images = finalImageUrls;
+
       console.log('💾 Triggering save (isNew=' + isNew + ')...');
 
-      // FIRE AND FORGET: We do not await the Firebase write here.
-      // This prevents the UI from freezing if the network drops the server's response.
-      // The local snapshot listener will instantly update the table anyway.
+      // FIRE AND FORGET
       if (isNew) {
         addDoc(collection(db, 'mukil_products'), product).catch(err => console.error("Background Write Error:", err));
       } else {
         setDoc(doc(db, 'mukil_products', idField), product).catch(err => console.error("Background Write Error:", err));
       }
 
-      showDbBanner('success', '✅ Product saved successfully!');
+      showDbBanner('success', '🎉 Product saved successfully!');
       closeModal();
     } catch (err) {
       console.error('❌ Error in save process:', err);
