@@ -340,9 +340,9 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 600; line-height
 .product-image-wrap img {
   width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s, opacity 0.5s;
 }
-.product-image-wrap .hover-img { position: absolute; top: 0; left: 0; opacity: 0; z-index: 1; }
-.product-card:hover .product-image-wrap .main-img { opacity: 0; }
+.product-image-wrap .hover-img { position: absolute; top: 0; left: 0; opacity: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; }
 .product-card:hover .product-image-wrap .hover-img { opacity: 1; transform: scale(1.05); }
+.product-card:hover .product-image-wrap .main-img { transform: scale(1.05); }
 .product-card:hover .product-image-wrap img:not(.hover-img) { transform: scale(1.05); }
 
 /* Product Badges */
