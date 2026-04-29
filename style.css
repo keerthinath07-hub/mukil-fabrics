@@ -256,11 +256,11 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 600; line-height
   width: 100%; 
   height: 100%; 
   object-fit: cover; 
-  object-position: center 75%; /* Focus on the circled dress area */
-  transform: scale(1.8); /* "Crop" into the image by zooming in */
+  object-position: center 35%; /* Focus on face to waist area */
+  transform: scale(1.3); /* Balanced zoom to see more of the model */
   transition: transform 20s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
 }
-.hero-bg.active img { transform: scale(1.5); } /* Still keep it zoomed in even after animation */
+.hero-bg.active img { transform: scale(1.1); }
 
 .hero-container {
   height: 100%;
