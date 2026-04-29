@@ -530,6 +530,8 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 600; line-height
     /* Show full portrait image - no cropping, no masking */
     height: auto;
     aspect-ratio: 3 / 4;
+    min-height: 400px;
+    flex-shrink: 0;
     -webkit-mask-image: none;
     mask-image: none;
   }
