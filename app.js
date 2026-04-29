@@ -469,7 +469,24 @@ async function processCheckout(e) {
   const address = document.getElementById('checkoutAddress').value;
   const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
+  // Generate Sequential Order ID: OR001, OR002, etc.
+  let nextOrderNum = 1;
+  try {
+    const { data: existingOrders } = await supabase.from('mukil_orders').select('id');
+    if (existingOrders && existingOrders.length > 0) {
+      const orderNums = existingOrders.map(o => {
+        // If ID starts with OR, parse number, otherwise ignore
+        if (o.id && o.id.startsWith('OR')) return parseInt(o.id.replace('OR', ''));
+        return null;
+      }).filter(n => n !== null && !isNaN(n));
+      if (orderNums.length > 0) nextOrderNum = Math.max(...orderNums) + 1;
+    }
+  } catch (err) { console.error("Error fetching order count:", err); }
+
+  const orderId = 'OR' + nextOrderNum.toString().padStart(3, '0');
+
   const order = {
+    id: orderId,
     date: new Date().toISOString(),
     customer: { name, phone, address },
     items: [...cart],
@@ -477,9 +494,42 @@ async function processCheckout(e) {
   };
 
   // 1. Save Order to Supabase
-  await supabase.from('mukil_orders').insert(order);
+  const { error } = await supabase.from('mukil_orders').insert(order);
+  if (error) {
+    // If it fails because of UUID constraint, we might need the user to run the SQL fix
+    console.error("Order save error:", error);
+    if (error.message.includes('invalid input syntax for type uuid')) {
+       alert("DATABASE UPDATE REQUIRED: Your database still expects long UUIDs. Please go to Admin Panel and run the 'Fix Order IDs' SQL script provided by the assistant.");
+       return;
+    }
+    throw error;
+  }
 
-  // 2. Deduct Inventory in Supabase
+  // 2. Clear Cart
+  cart = [];
+  localStorage.removeItem('mukil_cart');
+  updateCartUI();
+
+  // 3. Notify & Close
+  closeCheckout();
+  
+  // Custom Confirmation with Order ID
+  Swal.fire({
+    title: 'Order Confirmed!',
+    html: `
+      <div style="font-size: 1.1em; margin-bottom: 10px;">Thank you, <strong>${name}</strong>!</div>
+      <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
+        <div style="color: #666; font-size: 0.9em; margin-bottom: 5px;">Your Order ID is:</div>
+        <div style="font-size: 1.8em; font-weight: 800; letter-spacing: 2px; color: #000;">${orderId}</div>
+      </div>
+      <p style="margin-top: 15px; font-size: 0.9em; color: #666;">We will contact you at <strong>${phone}</strong> shortly.</p>
+    `,
+    icon: 'success',
+    confirmButtonText: 'Great!',
+    confirmButtonColor: '#000'
+  });
+
+  // 4. Deduct Inventory in Supabase
   for (const cartItem of cart) {
     const { data: productSnap } = await supabase.from('mukil_products').select('sizes').eq('id', cartItem.id).single();
     if (productSnap) {

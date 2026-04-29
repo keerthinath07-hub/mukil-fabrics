@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Functions
   function renderTable() {
     try {
-      productsTableBody.innerHTML = products.length === 0 ? '<tr><td colspan="6" style="text-align:center;">No products found.</td></tr>' : '';
+      productsTableBody.innerHTML = products.length === 0 ? '<tr><td colspan="7" style="text-align:center;">No products found.</td></tr>' : '';
       products.forEach(product => {
         const sizes = product.sizes || [];
         const sizesHTML = sizes.map(s => {
@@ -266,6 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
+          <td><code style="background:#eee; padding:2px 5px; border-radius:3px;">${product.id}</code></td>
           <td><img src="${images[0]}" class="product-img-thumb" onerror="this.src='https://via.placeholder.com/50x60'"></td>
           <td><strong>${product.name || 'Unnamed Product'}</strong><br><small class="text-muted">${categories.join(', ')}</small></td>
           <td>₹${product.price || 0}</td>
@@ -280,13 +281,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     } catch (err) {
       console.error("❌ Admin: Error rendering table:", err);
-      productsTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Error rendering table. Check console.</td></tr>`;
+      productsTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red;">Error rendering table. Check console.</td></tr>`;
     }
   }
 
   function renderOrders() {
     try {
-      ordersTableBody.innerHTML = orders.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No orders found.</td></tr>' : '';
+      ordersTableBody.innerHTML = orders.length === 0 ? '<tr><td colspan="5" style="text-align:center;">No orders found.</td></tr>' : '';
       let totalRev = 0, totalItems = 0;
       
       const sortedOrders = [...orders].filter(o => o.date).sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -305,6 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
+          <td><code style="background:#eee; padding:2px 5px; border-radius:3px;">${order.id.length > 8 ? order.id.slice(0,8) : order.id}</code></td>
           <td><small>${orderDate}</small></td>
           <td><strong>${customer.name}</strong><br><small>${customer.phone}</small><br><small>${customer.address}</small></td>
           <td>${itemsHTML}</td>
@@ -324,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     } catch (err) {
       console.error("❌ Admin: Error rendering orders:", err);
-      ordersTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">Error rendering orders. Check console.</td></tr>`;
+      ordersTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Error rendering orders. Check console.</td></tr>`;
     }
   }
 
@@ -432,12 +434,14 @@ document.addEventListener('DOMContentLoaded', () => {
       ]);
 
       if (isNew) {
-        // No ID needed, Supabase will generate one if not provided, or we can use UUID.
-        // But our schema expects 'id' to be text, so let's generate a quick ID if it's new
-        // Generate a unique Product Number: MF-XXXX (Last 6 digits of timestamp)
-        const timestampPart = Date.now().toString().slice(-6);
-        const randomPart = Math.random().toString(36).substr(2, 3).toUpperCase();
-        product.id = `MF-${timestampPart}${randomPart}`;
+        // Generate Sequential Product ID: P001, P002, etc.
+        const productIds = products.map(p => p.id).filter(id => id.startsWith('P'));
+        let nextNum = 1;
+        if (productIds.length > 0) {
+          const numbers = productIds.map(id => parseInt(id.replace('P', ''))).filter(n => !isNaN(n));
+          if (numbers.length > 0) nextNum = Math.max(...numbers) + 1;
+        }
+        product.id = 'P' + nextNum.toString().padStart(3, '0');
         const { error } = await withTimeout(supabase.from('mukil_products').insert(product), 8000);
         if (error) throw error;
       } else {
