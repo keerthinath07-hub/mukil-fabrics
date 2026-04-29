@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initAnnouncementBar();
   initHeaderScroll();
   initMobileNav();
+  initOttSlider();
   initSupabase(); // Real-time listener for products
   updateCartUI();
   initAnimations();
@@ -189,6 +190,53 @@ function initAnnouncementBar() {
     currentSlide = (currentSlide + 1) % 4;
     track.style.transform = `translateX(-${currentSlide * 25}%)`;
   }, 3500);
+}
+
+// --- OTT SLIDER ---
+let ottIndex = 0;
+let ottInterval;
+
+function initOttSlider() {
+  const slides = document.querySelectorAll('.ott-slide');
+  const segments = document.querySelectorAll('.progress-segment');
+  const nextBtn = document.getElementById('ottNext');
+  const prevBtn = document.getElementById('ottPrev');
+  if (!slides.length) return;
+
+  function showOttSlide(index) {
+    slides.forEach(s => s.classList.remove('active'));
+    segments.forEach(s => s.classList.remove('active'));
+    
+    ottIndex = (index + slides.length) % slides.length;
+    slides[ottIndex].classList.add('active');
+    if (segments[ottIndex]) segments[ottIndex].classList.add('active');
+    
+    // Scroll the slider container
+    const slider = document.getElementById('ottSlider');
+    slider.scrollTo({
+      left: slides[ottIndex].offsetLeft,
+      behavior: 'smooth'
+    });
+  }
+
+  window.goToOttSlide = function(index) {
+    showOttSlide(index);
+    startOttTimer();
+  };
+
+  if (nextBtn) nextBtn.addEventListener('click', () => goToOttSlide(ottIndex + 1));
+  if (prevBtn) prevBtn.addEventListener('click', () => goToOttSlide(ottIndex - 1));
+
+  function startOttTimer() {
+    clearInterval(ottInterval);
+    ottInterval = setInterval(() => {
+      showOttSlide(ottIndex + 1);
+    }, 6000);
+  }
+
+  // Initial call
+  showOttSlide(0);
+  startOttTimer();
 }
 
 function initHeaderScroll() {

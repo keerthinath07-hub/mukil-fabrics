@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mukil Fabrics – Premium Pleated Maxi Dresses</title>
   <meta name="description" content="Shop Mukil Fabrics for trendy, vibrant pleated maxi dresses. Direct from manufacturer at ₹1499.">
-  <link rel="stylesheet" href="style.css?v=2.4">
+  <link rel="stylesheet" href="style.css?v=2.5">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
@@ -92,46 +92,64 @@
   </header>
 
   <main>
-    <!-- CINEMATIC BANNERS (VERTICAL SCROLL) -->
-    <section class="banner-section" id="home">
-      <div class="banner-image">
-        <img src="images/hero_banner.jpg" alt="Vibrant Pleated Maxi Dresses">
-      </div>
-      <div class="banner-content">
-        <span class="hero-tag">Signature Series</span>
-        <h1 class="hero-main-title">Wear the Colour<br><span class="animated-gradient-text">of Confidence</span></h1>
-        <p class="hero-desc">Premium In-House Manufacturing. Direct to You. Discover our signature pleated maxi dresses starting at ₹1499.</p>
-        <div class="hero-actions">
-          <a href="#shop" class="btn-primary">Shop Collection</a>
+    <!-- OTT-STYLE SWIPING HERO -->
+    <section class="ott-hero">
+      <div class="ott-slider" id="ottSlider">
+        <!-- Slide 1 -->
+        <div class="ott-slide active">
+          <div class="ott-bg">
+            <img src="images/hero_banner.jpg" alt="Vibrant Pleated Maxi Dresses">
+          </div>
+          <div class="ott-content">
+            <span class="ott-tag">New Season</span>
+            <h1 class="ott-title">Wear the Colour<br>of <span class="gradient-text">Confidence</span></h1>
+            <p class="ott-desc">Premium In-House Manufacturing. Discover our signature pleated maxi dresses starting at ₹1499.</p>
+            <div class="ott-actions">
+              <a href="#shop" class="btn-primary">Shop Now</a>
+              <button class="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg> List</button>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
 
-    <section class="banner-section reverse">
-      <div class="banner-image">
-        <img src="images/dress_1_main.jpg" alt="Effortless Elegance">
-      </div>
-      <div class="banner-content">
-        <span class="hero-tag">Bestsellers</span>
-        <h1 class="hero-main-title">Effortless<br><span class="animated-gradient-text">Elegance</span></h1>
-        <p class="hero-desc">Our most-loved silhouettes, designed for maximum comfort and style. Trusted by thousands of happy customers.</p>
-        <div class="hero-actions">
-          <a href="#shop" class="btn-primary">Shop Bestsellers</a>
+        <!-- Slide 2 -->
+        <div class="ott-slide">
+          <div class="ott-bg">
+            <img src="images/dress_1_main.jpg" alt="Effortless Elegance">
+          </div>
+          <div class="ott-content">
+            <span class="ott-tag">Bestseller</span>
+            <h1 class="ott-title">Effortless<br>Elegance</h1>
+            <p class="ott-desc">Our most-loved silhouettes, designed for maximum comfort and premium style.</p>
+            <div class="ott-actions">
+              <a href="#shop" class="btn-primary">Shop Bestsellers</a>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
 
-    <section class="banner-section">
-      <div class="banner-image">
-        <img src="images/dress_2_main.jpg" alt="Premium Quality">
-      </div>
-      <div class="banner-content">
-        <span class="hero-tag">The Mukil Story</span>
-        <h1 class="hero-main-title">Crafted with<br><span class="animated-gradient-text">Precision</span></h1>
-        <p class="hero-desc">From fabric selection to the final pleat, we control the entire process to bring you luxury at an honest price.</p>
-        <div class="hero-actions">
-          <a href="#collections" class="btn-primary">Our Process</a>
+        <!-- Slide 3 -->
+        <div class="ott-slide">
+          <div class="ott-bg">
+            <img src="images/dress_2_main.jpg" alt="Premium Quality">
+          </div>
+          <div class="ott-content">
+            <span class="ott-tag">Craftsmanship</span>
+            <h1 class="ott-title">Crafted with<br>Precision</h1>
+            <p class="ott-desc">Direct from manufacturer. Luxury quality at an honest price.</p>
+            <div class="ott-actions">
+              <a href="#collections" class="btn-primary">Our Process</a>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- OTT Navigation -->
+      <button class="ott-nav prev" id="ottPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+      <button class="ott-nav next" id="ottNext"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+      
+      <div class="ott-progress">
+        <div class="progress-segment active" onclick="goToOttSlide(0)"><div class="progress-fill"></div></div>
+        <div class="progress-segment" onclick="goToOttSlide(1)"><div class="progress-fill"></div></div>
+        <div class="progress-segment" onclick="goToOttSlide(2)"><div class="progress-fill"></div></div>
       </div>
     </section>
 
