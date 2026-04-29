@@ -373,12 +373,48 @@ document.addEventListener('DOMContentLoaded', () => {
       const existingProduct = isNew ? null : products.find(p => p.id === idField);
       const reviews = existingProduct ? (existingProduct.reviews || 0) : 0;
 
+      // Handle image uploads
+      const fileInput = document.getElementById('productImageUpload');
+      const files = fileInput ? fileInput.files : [];
+      let uploadedImageUrls = [];
+      
+      if (files.length > 0) {
+        saveBtn.textContent = 'Uploading Photos...';
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Date.now()}_${Math.random().toString(36).substring(2,9)}.${fileExt}`;
+          
+          const { data, error } = await supabase.storage
+            .from('product-images')
+            .upload(fileName, file, { cacheControl: '3600', upsert: false });
+            
+          if (error) {
+            console.error('Upload error:', error);
+            alert(`Failed to upload ${file.name}: ${error.message}`);
+            throw error;
+          }
+          
+          const { data: publicUrlData } = supabase.storage
+            .from('product-images')
+            .getPublicUrl(fileName);
+            
+          if (publicUrlData && publicUrlData.publicUrl) {
+            uploadedImageUrls.push(publicUrlData.publicUrl);
+          }
+        }
+      }
+
+      // Combine manually pasted URLs with newly uploaded URLs
+      const manualImages = document.getElementById('productImages').value.split(',').map(s => s.trim()).filter(s => s);
+      const allImages = [...manualImages, ...uploadedImageUrls];
+
       const product = {
         name: document.getElementById('productName').value.trim(),
         price: parseInt(document.getElementById('productPrice').value) || 0,
         originalPrice: document.getElementById('productOriginalPrice').value ? parseInt(document.getElementById('productOriginalPrice').value) : null,
         discount: document.getElementById('productDiscount').value.trim() || null,
-        images: document.getElementById('productImages').value.split(',').map(s => s.trim()).filter(s => s),
+        images: allImages,
         category: document.getElementById('productCategory').value.split(',').map(s => s.trim()).filter(s => s),
         tags: document.getElementById('productTags').value.split(',').map(s => s.trim()).filter(s => s),
         sizes: sizes,

@@ -121,8 +121,17 @@
         </div>
 
         <div class="form-group">
-          <label for="productImages">Image URLs (comma separated)</label>
-          <input type="text" id="productImages" required placeholder="images/dress_1_main.jpg, images/dress_1_back.jpg">
+          <label>Product Images</label>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div>
+              <label for="productImageUpload" style="font-size:0.9em; color:#bbb;">Upload New Photos (Optional)</label>
+              <input type="file" id="productImageUpload" multiple accept="image/*" style="width:100%; padding:10px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); border-radius:5px; color:#fff;">
+            </div>
+            <div>
+              <label for="productImages" style="font-size:0.9em; color:#bbb;">Or Paste Image URLs (comma separated)</label>
+              <input type="text" id="productImages" placeholder="images/dress_1_main.jpg, images/dress_1_back.jpg">
+            </div>
+          </div>
         </div>
 
         <div class="form-row">
