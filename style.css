@@ -395,11 +395,11 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 600; line-height
   position: relative;
   overflow: hidden;
 }
-.progress-segment.active .progress-fill {
+.progress-segment.active .ott-progress-fill {
   width: 100%;
   transition: width 6s linear;
 }
-.progress-fill {
+.ott-progress-fill {
   position: absolute;
   inset: 0;
   width: 0%;
@@ -611,8 +611,8 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 600; line-height
 .close-cart { font-size: 1.5rem; }
 .shipping-progress-container { padding: 1rem 1.5rem; background: var(--bg-alt); border-bottom: 1px solid var(--border); }
 .shipping-message { font-size: 0.85rem; text-align: center; margin-bottom: 0.5rem; font-weight: 500; }
-.progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-.progress-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
+.progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; position: relative; }
+.cart-progress-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; position: absolute; left: 0; top: 0; }
 .cart-items { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
 .cart-item { display: flex; gap: 1rem; }
 .cart-item-img { width: 80px; height: 100px; object-fit: cover; border-radius: var(--radius); }
