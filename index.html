@@ -92,23 +92,71 @@
   </header>
 
   <main>
-    <!-- SPLIT HERO -->
-    <section class="hero-full" id="home">
-      <div class="hero-bg animate-on-load">
-        <img src="images/hero_banner.jpg" alt="Vibrant Pleated Maxi Dresses">
-      </div>
-      <div class="container hero-container">
-        <div class="hero-content-wrapper">
-          <div class="hero-text-content">
-            <span class="hero-tag reveal-up animate-on-load delay-1">New Collection</span>
-            <h1 class="hero-main-title reveal-up animate-on-load delay-2">Wear the Colour<br><span class="animated-gradient-text">of Confidence</span></h1>
-            <p class="hero-desc reveal-up animate-on-load delay-3">Premium In-House Manufacturing. Direct to You. Discover our signature pleated maxi dresses starting at ₹1499.</p>
-            <div class="hero-actions reveal-up animate-on-load delay-3">
-              <a href="#shop" class="btn-primary">Shop Now</a>
-              <a href="#collections" class="btn-outline">View Collections</a>
+    <!-- CINEMATIC HERO SLIDER -->
+    <section class="hero-slider" id="home">
+      <!-- Slide 1 -->
+      <div class="hero-slide active">
+        <div class="hero-bg">
+          <img src="images/hero_banner.jpg" alt="Vibrant Pleated Maxi Dresses">
+        </div>
+        <div class="container hero-container">
+          <div class="hero-content-wrapper">
+            <div class="hero-text-content">
+              <span class="hero-tag reveal-up animate-on-load delay-1">New Collection</span>
+              <h1 class="hero-main-title reveal-up animate-on-load delay-2">Wear the Colour<br><span class="animated-gradient-text">of Confidence</span></h1>
+              <p class="hero-desc reveal-up animate-on-load delay-3">Premium In-House Manufacturing. Direct to You. Discover our signature pleated maxi dresses starting at ₹1499.</p>
+              <div class="hero-actions reveal-up animate-on-load delay-3">
+                <a href="#shop" class="btn-primary">Shop Now</a>
+                <a href="#collections" class="btn-outline">View Collections</a>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="hero-slide">
+        <div class="hero-bg">
+          <img src="images/dress_1_main.jpg" alt="Effortless Elegance">
+        </div>
+        <div class="container hero-container">
+          <div class="hero-content-wrapper">
+            <div class="hero-text-content">
+              <span class="hero-tag">Bestsellers</span>
+              <h1 class="hero-main-title">Effortless<br><span class="animated-gradient-text">Elegance</span></h1>
+              <p class="hero-desc">Our most-loved silhouettes, designed for maximum comfort and style. Trusted by thousands of happy customers.</p>
+              <div class="hero-actions">
+                <a href="#shop" class="btn-primary">Shop Bestsellers</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="hero-slide">
+        <div class="hero-bg">
+          <img src="images/dress_2_main.jpg" alt="Premium Quality">
+        </div>
+        <div class="container hero-container">
+          <div class="hero-content-wrapper">
+            <div class="hero-text-content">
+              <span class="hero-tag">The Mukil Story</span>
+              <h1 class="hero-main-title">Crafted with<br><span class="animated-gradient-text">Precision</span></h1>
+              <p class="hero-desc">From fabric selection to the final pleat, we control the entire process to bring you luxury at an honest price.</p>
+              <div class="hero-actions">
+                <a href="#collections" class="btn-primary">Our Process</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slider Dots -->
+      <div class="slider-dots">
+        <span class="dot active" onclick="goToSlide(0)"></span>
+        <span class="dot" onclick="goToSlide(1)"></span>
+        <span class="dot" onclick="goToSlide(2)"></span>
       </div>
     </section>
 
