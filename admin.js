@@ -131,10 +131,11 @@ document.addEventListener('DOMContentLoaded', () => {
   showDbBanner('warning', '⏳ Connecting to Firebase database...');
   
   let isConnected = false;
+  let hasResponded = false;
   
   // Fallback timeout for local firewall blocking
   setTimeout(() => {
-    if (!isConnected) {
+    if (!hasResponded) {
       console.warn("⚠️ Admin: Database connection blocked by firewall. Loading offline fallback data...");
       showDbBanner('warning', '⚠️ Firewall Blocked Connection. Showing Offline Preview.');
       
@@ -151,6 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   onSnapshot(collection(db, 'mukil_products'), (snapshot) => {
     isConnected = true;
+    hasResponded = true;
     console.log("📦 Admin: Products snapshot received. Count:", snapshot.size);
     showDbBanner('success', '✅ Connected to Firebase! Database is live.');
     
@@ -180,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error("❌ Admin: Error processing products snapshot:", err);
     }
   }, (error) => {
+    hasResponded = true;
     console.error("❌ Admin: Products sync error:", error);
     if (error.code === 'not-found') {
       showDbBanner('error',
