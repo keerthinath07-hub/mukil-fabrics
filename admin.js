@@ -1,21 +1,8 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { initializeFirestore, collection, addDoc, getDocs, onSnapshot, doc, updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBdi6rU_eGbrdbenE5LQp-bgC58QkYQ-UQ",
-  authDomain: "mukil-fabrics.firebaseapp.com",
-  projectId: "mukil-fabrics",
-  storageBucket: "mukil-fabrics.firebasestorage.app",
-  messagingSenderId: "486533319432",
-  appId: "1:486533319432:web:093be705ef9d96a4647abd",
-  measurementId: "G-RVMHF7LXTQ"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = initializeFirestore(app, {
-  experimentalForceLongPolling: true,
-  useFetchStreams: false
-}, "(default)");
+const supabaseUrl = 'https://zotvzqtkfwlcvqakdtwo.supabase.co';
+const supabaseKey = 'sb_publishable_7c4B5AiAgzJKuuLgIuhuEQ_NQP3Am6m';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const defaultProducts = [
   { id: 'p1', name: 'Pleated Maxi with Lining', price: 1499, originalPrice: 1999, discount: '25%', images: ['photos/Pleated maxi with lining ❤️.jpg'], category: ['all', 'maxi', 'new'], tags: ['New', 'Sale'], sizes: [{ size: 'S', available: true, quantity: 10 }, { size: 'M', available: true, quantity: 10 }, { size: 'L', available: true, quantity: 10 }, { size: 'XL', available: true, quantity: 10 }, { size: 'XXL', available: true, quantity: 10 }], reviews: 45 },
@@ -32,11 +19,11 @@ const defaultProducts = [
   { id: 'p12', name: 'Pleated Maxi with Lining', price: 1499, originalPrice: 1999, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (12).jpg'], category: ['all', 'maxi'], tags: [], sizes: [{ size: 'S', available: true, quantity: 10 }, { size: 'M', available: true, quantity: 10 }, { size: 'L', available: true, quantity: 10 }, { size: 'XL', available: true, quantity: 10 }, { size: 'XXL', available: true, quantity: 10 }], reviews: 9 }
 ];
 
-async function seedDatabase() {
-  for (const p of defaultProducts) {
-    await setDoc(doc(db, 'mukil_products', p.id), p);
+  async function seedDatabase() {
+    for (const p of defaultProducts) {
+      await supabase.from('mukil_products').upsert(p);
+    }
   }
-}
 
 document.addEventListener('DOMContentLoaded', () => {
   let products = [];
@@ -129,9 +116,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Firestore Sync
-  console.log("🔥 Admin: Initializing Firestore Sync...");
-  showDbBanner('warning', '⏳ Connecting to Firebase database...');
+  // Supabase Sync
+  console.log("🔥 Admin: Initializing Supabase Sync...");
+  showDbBanner('warning', '⏳ Connecting to Supabase database...');
   
   let isConnected = false;
   let hasResponded = false;
@@ -153,64 +140,86 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }, 2000);
 
-  onSnapshot(collection(db, 'mukil_products'), (snapshot) => {
-    isConnected = true;
-    hasResponded = true;
-    console.log("📦 Admin: Products snapshot received. Count:", snapshot.size);
-    showDbBanner('success', '✅ Connected to Firebase! Database is live.');
-    
-    // Hide the global buffering loader and trigger confetti
-    const loader = document.getElementById('globalLoader');
-    if (loader && !loader.classList.contains('hidden')) {
-      loader.classList.add('hidden');
-      if (typeof confetti === 'function') {
-        confetti({
-          particleCount: 150,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#2c3e50', '#e74c3c', '#f39c12', '#27ae60']
-        });
+  async function initSupabaseAdmin() {
+    try {
+      const { data: snapshot, error } = await supabase.from('mukil_products').select('*');
+      hasResponded = true;
+      if (error) throw error;
+
+      isConnected = true;
+      console.log("📦 Admin: Products snapshot received. Count:", snapshot.length);
+      showDbBanner('success', '✅ Connected to Supabase! Database is live.');
+      
+      const loader = document.getElementById('globalLoader');
+      if (loader && !loader.classList.contains('hidden')) {
+        loader.classList.add('hidden');
+        if (typeof confetti === 'function') {
+          confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#2c3e50', '#e74c3c', '#f39c12', '#27ae60']
+          });
+        }
       }
+
+      if (snapshot.length < 5) {
+        console.log("🌱 Admin: Injecting default photos into database...");
+        await seedDatabase();
+        const { data: newSnapshot } = await supabase.from('mukil_products').select('*');
+        products = newSnapshot || [];
+        renderTable();
+      } else {
+        products = snapshot;
+        renderTable();
+      }
+
+      supabase.channel('public:mukil_products')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'mukil_products' }, payload => {
+          if (payload.eventType === 'INSERT') {
+            products.push(payload.new);
+          } else if (payload.eventType === 'UPDATE') {
+            const idx = products.findIndex(p => p.id === payload.new.id);
+            if (idx !== -1) products[idx] = payload.new;
+          } else if (payload.eventType === 'DELETE') {
+            products = products.filter(p => p.id !== payload.old.id);
+          }
+          renderTable();
+        })
+        .subscribe();
+
+    } catch (error) {
+      hasResponded = true;
+      console.error("❌ Admin: Products sync error:", error);
+      showDbBanner('error', '❌ Database error: ' + error.message + ' | Check browser console (F12) for details.');
     }
 
     try {
-      if (snapshot.size < 5) {
-        console.log("🌱 Admin: Injecting default photos into database...");
-        seedDatabase();
-      } else {
-        products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderTable();
-      }
-    } catch (err) {
-      console.error("❌ Admin: Error processing products snapshot:", err);
-    }
-  }, (error) => {
-    hasResponded = true;
-    console.error("❌ Admin: Products sync error:", error);
-    if (error.code === 'not-found') {
-      showDbBanner('error',
-        '❌ <strong>Firestore Database Not Found!</strong> &nbsp;| '
-        + 'Go to <a href="https://console.firebase.google.com/project/mukil-fabrics/firestore" target="_blank" style="color:#fff;text-decoration:underline;">Firebase Console → Firestore Database</a> '
-        + 'and click <strong>"Create Database"</strong> → choose <strong>"Test Mode"</strong> → select any region → Done.'
-      );
-    } else if (error.code === 'permission-denied') {
-      showDbBanner('error',
-        '❌ <strong>Permission Denied!</strong> &nbsp;| '
-        + 'Go to <a href="https://console.firebase.google.com/project/mukil-fabrics/firestore/rules" target="_blank" style="color:#fff;text-decoration:underline;">Firestore Rules</a> '
-        + 'and change <code style="background:rgba(0,0,0,0.2);padding:2px 5px;">allow read, write: if false</code> to <code style="background:rgba(0,0,0,0.2);padding:2px 5px;">allow read, write: if true</code>'
-      );
-    } else {
-      showDbBanner('error', '❌ Database error: ' + error.message + ' | Check browser console (F12) for details.');
-    }
-  });
+      const { data: ordersSnapshot, error: ordersError } = await supabase.from('mukil_orders').select('*');
+      if (ordersError) throw ordersError;
+      console.log("📦 Admin: Orders snapshot received.");
+      orders = ordersSnapshot;
+      renderOrders();
 
-  onSnapshot(collection(db, 'mukil_orders'), (snapshot) => {
-    console.log("📦 Admin: Orders snapshot received.");
-    orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    renderOrders();
-  }, (error) => {
-    console.error("❌ Admin: Orders sync error:", error);
-  });
+      supabase.channel('public:mukil_orders')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'mukil_orders' }, payload => {
+          if (payload.eventType === 'INSERT') {
+            orders.push(payload.new);
+          } else if (payload.eventType === 'UPDATE') {
+            const idx = orders.findIndex(o => o.id === payload.new.id);
+            if (idx !== -1) orders[idx] = payload.new;
+          } else if (payload.eventType === 'DELETE') {
+            orders = orders.filter(o => o.id !== payload.old.id);
+          }
+          renderOrders();
+        })
+        .subscribe();
+    } catch (error) {
+      console.error("❌ Admin: Orders sync error:", error);
+    }
+  }
+
+  initSupabaseAdmin();
 
   // Event Listeners
   addProductBtn.addEventListener('click', () => openModal());
@@ -382,9 +391,15 @@ document.addEventListener('DOMContentLoaded', () => {
       ]);
 
       if (isNew) {
-        await withTimeout(addDoc(collection(db, 'mukil_products'), product), 8000);
+        // No ID needed, Supabase will generate one if not provided, or we can use UUID.
+        // But our schema expects 'id' to be text, so let's generate a quick ID if it's new
+        product.id = 'prod_' + Math.random().toString(36).substr(2, 9);
+        const { error } = await withTimeout(supabase.from('mukil_products').insert(product), 8000);
+        if (error) throw error;
       } else {
-        await withTimeout(setDoc(doc(db, 'mukil_products', idField), product), 8000);
+        product.id = idField;
+        const { error } = await withTimeout(supabase.from('mukil_products').update(product).eq('id', idField), 8000);
+        if (error) throw error;
       }
 
       showDbBanner('success', '🎉 Product saved successfully!');
@@ -392,9 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error('❌ Error in save process:', err);
       if (err.message === 'timeout') {
-        alert('❌ SAVE TIMEOUT!\n\nThe database took too long to respond. This usually happens if your internet connection is weak, or a firewall is blocking Firebase.\n\nPlease check your connection and try again.');
-      } else if (err.code === 'permission-denied') {
-        alert('❌ PERMISSION DENIED!\n\nYour Firebase Firestore rules are blocking writes. You need to update your database rules to allow writing.\n\nGo to Firebase Console -> Firestore Database -> Rules, and change "allow read, write: if false;" to "allow read, write: if true;"');
+        alert('❌ SAVE TIMEOUT!\n\nThe database took too long to respond. This usually happens if your internet connection is weak, or a firewall is blocking Supabase.\n\nPlease check your connection and try again.');
       } else {
         alert('❌ Error processing form:\n' + err.message);
       }
@@ -410,7 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function deleteProduct(id) {
     if (confirm('Delete this product?')) {
-      await deleteDoc(doc(db, 'mukil_products', id));
+      await supabase.from('mukil_products').delete().eq('id', id);
     }
   }
 

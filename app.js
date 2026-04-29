@@ -1,21 +1,8 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { initializeFirestore, collection, addDoc, getDocs, onSnapshot, doc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBdi6rU_eGbrdbenE5LQp-bgC58QkYQ-UQ",
-  authDomain: "mukil-fabrics.firebaseapp.com",
-  projectId: "mukil-fabrics",
-  storageBucket: "mukil-fabrics.firebasestorage.app",
-  messagingSenderId: "486533319432",
-  appId: "1:486533319432:web:093be705ef9d96a4647abd",
-  measurementId: "G-RVMHF7LXTQ"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = initializeFirestore(app, {
-  experimentalForceLongPolling: true,
-  useFetchStreams: false
-}, "(default)");
+const supabaseUrl = 'https://zotvzqtkfwlcvqakdtwo.supabase.co';
+const supabaseKey = 'sb_publishable_7c4B5AiAgzJKuuLgIuhuEQ_NQP3Am6m';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // PRODUCT DATA
 const defaultProducts = [
@@ -77,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initAnnouncementBar();
   initHeaderScroll();
   initMobileNav();
-  initFirestore(); // Real-time listener for products
+  initSupabase(); // Real-time listener for products
   updateCartUI();
   initAnimations();
   
@@ -115,12 +102,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// --- FIRESTORE SYNC ---
-async function initFirestore() {
-  const productsCol = collection(db, 'mukil_products');
+// --- SUPABASE SYNC ---
+async function initSupabase() {
   let isConnected = false;
 
-  // Fallback timeout: If the local firewall blocks Firebase, render the photos anyway
+  // Fallback timeout: If the local firewall blocks Supabase, render the photos anyway
   setTimeout(() => {
     if (!isConnected) {
       console.warn("⚠️ Database connection blocked by firewall. Using offline fallback data...");
@@ -129,36 +115,49 @@ async function initFirestore() {
     }
   }, 2000);
   
-  onSnapshot(productsCol, (snapshot) => {
+  try {
+    const { data: snapshot, error } = await supabase.from('mukil_products').select('*');
+    if (error) throw error;
+    
     isConnected = true;
-    console.log("📦 Firestore Snapshot received. Count:", snapshot.size);
-    // Force seed if less than 5 products exist (this injects all 12 photos instantly)
-    if (snapshot.size < 5) {
-      console.log("🌱 Injecting 12 photos into database...");
-      seedDatabase();
+    console.log("📦 Supabase Snapshot received. Count:", snapshot.length);
+    
+    if (snapshot.length < 5) {
+      console.log("🌱 Injecting default photos into database...");
+      await seedDatabase();
+      const { data: newSnapshot } = await supabase.from('mukil_products').select('*');
+      products = newSnapshot || [];
     } else {
-      try {
-        products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        console.log("✅ Products loaded from Cloud:", products.length);
+      products = snapshot;
+    }
+    console.log("✅ Products loaded from Cloud:", products.length);
+    renderProducts(document.querySelector('.tab-item.active')?.dataset.filter || 'all');
+    
+    // Subscribe to realtime changes
+    supabase.channel('public:mukil_products')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'mukil_products' }, payload => {
+        console.log('Realtime update received!', payload);
+        if (payload.eventType === 'INSERT') {
+          products.push(payload.new);
+        } else if (payload.eventType === 'UPDATE') {
+          const idx = products.findIndex(p => p.id === payload.new.id);
+          if (idx !== -1) products[idx] = payload.new;
+        } else if (payload.eventType === 'DELETE') {
+          products = products.filter(p => p.id !== payload.old.id);
+        }
         renderProducts(document.querySelector('.tab-item.active')?.dataset.filter || 'all');
-      } catch (err) {
-        console.error("❌ Error processing products:", err);
-      }
-    }
-  }, (error) => {
-    console.error("❌ Firestore Subscription Error:", error);
-    if (error.code === 'not-found') {
-      showToast("Firestore Database not found. Please create it in the Firebase Console.");
-    } else {
-      showToast("Database error. Please check console.");
-    }
-  });
+      })
+      .subscribe();
+
+  } catch (error) {
+    console.error("❌ Supabase Subscription Error:", error);
+    showToast("Database error. Please check console.");
+  }
 }
 
 async function seedDatabase() {
-  const productsCol = collection(db, 'mukil_products');
   for (const p of defaultProducts) {
-    await setDoc(doc(db, 'mukil_products', p.id), p);
+    await supabase.from('mukil_products').upsert(p);
   }
 }
 
@@ -446,20 +445,19 @@ async function processCheckout(e) {
     total: totalAmount
   };
 
-  // 1. Save Order to Firestore
-  await addDoc(collection(db, 'mukil_orders'), order);
+  // 1. Save Order to Supabase
+  await supabase.from('mukil_orders').insert(order);
 
-  // 2. Deduct Inventory in Firestore
+  // 2. Deduct Inventory in Supabase
   for (const cartItem of cart) {
-    const productRef = doc(db, 'mukil_products', cartItem.id);
-    const productSnap = await getDoc(productRef);
-    if (productSnap.exists()) {
-      const pData = productSnap.data();
+    const { data: productSnap } = await supabase.from('mukil_products').select('sizes').eq('id', cartItem.id).single();
+    if (productSnap) {
+      const pData = productSnap;
       const sizeIndex = pData.sizes.findIndex(s => s.size === cartItem.size);
       if (sizeIndex !== -1) {
         pData.sizes[sizeIndex].quantity = Math.max(0, pData.sizes[sizeIndex].quantity - cartItem.qty);
         pData.sizes[sizeIndex].available = pData.sizes[sizeIndex].quantity > 0;
-        await updateDoc(productRef, { sizes: pData.sizes });
+        await supabase.from('mukil_products').update({ sizes: pData.sizes }).eq('id', cartItem.id);
       }
     }
   }
