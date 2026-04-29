@@ -531,7 +531,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 600; line-height
     mask-image: linear-gradient(to top, transparent 0%, black 20%);
   }
   .hero-bg img {
-    object-position: center top; /* Ensure the model's head/dress top is visible */
+    object-position: center 80%; /* Ensure the model (at the bottom) is visible */
   }
   
   .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
