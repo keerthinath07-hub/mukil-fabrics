@@ -521,17 +521,23 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 600; line-height
   .mega-promo { display: none; }
   
   .hero-full { height: auto; display: flex; flex-direction: column; padding-top: 2rem; }
-  .hero-container { height: auto; order: 1; padding: 0 1.5rem 2rem; width: 100%; }
+  .hero-container { height: auto; order: 2; padding: 2rem 1.5rem 3rem; width: 100%; }
   .hero-content-wrapper { width: 100%; padding-right: 0; text-align: center; }
   .hero-text-content { margin: 0 auto; }
   .hero-actions { justify-content: center; }
   .hero-bg { 
-    position: relative; width: 100%; height: 55vh; min-height: 400px; flex-shrink: 0; order: 2; 
-    -webkit-mask-image: linear-gradient(to top, transparent 0%, black 5%);
-    mask-image: linear-gradient(to top, transparent 0%, black 5%);
+    position: relative; width: 100%; order: 1;
+    /* Show full portrait image - no cropping, no masking */
+    height: auto;
+    aspect-ratio: 3 / 4;
+    -webkit-mask-image: none;
+    mask-image: none;
   }
   .hero-bg img {
-    /* Rely on global center 60% position */
+    object-fit: contain;
+    object-position: center top;
+    width: 100%;
+    height: 100%;
   }
   
   .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
