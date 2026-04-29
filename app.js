@@ -209,6 +209,18 @@ function initMobileNav() {
         : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>`;
     });
   }
+
+  // Handle Mega Menu on Mobile
+  const megaMenuLinks = document.querySelectorAll('.has-mega-menu > a');
+  megaMenuLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      if(window.innerWidth <= 768) {
+        e.preventDefault();
+        const parent = link.parentElement;
+        parent.classList.toggle('active');
+      }
+    });
+  });
 }
 
 function showToast(message) {
