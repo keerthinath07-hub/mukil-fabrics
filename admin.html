@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - Mukil Fabrics</title>
   <link rel="stylesheet" href="admin.css?v=1.1">
+  <!-- jsPDF for Shipping Labels -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
@@ -80,6 +82,7 @@
                 <th>Customer</th>
                 <th>Items Ordered</th>
                 <th>Total</th>
+                <th>Shipping</th>
               </tr>
             </thead>
             <tbody id="ordersTableBody">

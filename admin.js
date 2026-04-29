@@ -309,6 +309,11 @@ document.addEventListener('DOMContentLoaded', () => {
           <td><strong>${customer.name}</strong><br><small>${customer.phone}</small><br><small>${customer.address}</small></td>
           <td>${itemsHTML}</td>
           <td><strong>₹${order.total || 0}</strong></td>
+          <td>
+            <button class="edit-btn" onclick="downloadShippingLabel('${order.id}')">
+              <i class="fas fa-file-pdf"></i> Label
+            </button>
+          </td>
         `;
         ordersTableBody.appendChild(tr);
       });
@@ -429,7 +434,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isNew) {
         // No ID needed, Supabase will generate one if not provided, or we can use UUID.
         // But our schema expects 'id' to be text, so let's generate a quick ID if it's new
-        product.id = 'prod_' + Math.random().toString(36).substr(2, 9);
+        // Generate a unique Product Number: MF-XXXX (Last 6 digits of timestamp)
+        const timestampPart = Date.now().toString().slice(-6);
+        const randomPart = Math.random().toString(36).substr(2, 3).toUpperCase();
+        product.id = `MF-${timestampPart}${randomPart}`;
         const { error } = await withTimeout(supabase.from('mukil_products').insert(product), 8000);
         if (error) throw error;
       } else {
@@ -462,6 +470,64 @@ document.addEventListener('DOMContentLoaded', () => {
       await supabase.from('mukil_products').delete().eq('id', id);
     }
   }
+
+  window.downloadShippingLabel = function(orderId) {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return alert('Order not found');
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const customer = order.customer || {};
+
+    // PDF Header
+    doc.setFontSize(22);
+    doc.setTextColor(44, 62, 80);
+    doc.text('MUKIL FABRICS', 105, 20, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.setTextColor(100);
+    doc.text('Shipping Label / Invoice', 105, 28, { align: 'center' });
+    doc.line(20, 35, 190, 35);
+
+    // Order Info
+    doc.setTextColor(0);
+    doc.setFontSize(10);
+    doc.text(`Order ID: ${order.id}`, 20, 45);
+    doc.text(`Date: ${new Date(order.date).toLocaleString()}`, 20, 50);
+
+    // Customer Section
+    doc.setFontSize(14);
+    doc.text('SHIP TO:', 20, 65);
+    doc.setFontSize(11);
+    doc.text(`${customer.name || 'N/A'}`, 20, 72);
+    doc.text(`${customer.phone || 'N/A'}`, 20, 77);
+    
+    // Address wrapping for long addresses
+    const splitAddress = doc.splitTextToSize(customer.address || 'N/A', 80);
+    doc.text(splitAddress, 20, 82);
+
+    // Products Section
+    doc.setFontSize(14);
+    doc.text('PRODUCT DETAILS:', 110, 65);
+    doc.setFontSize(10);
+    let yPos = 72;
+    order.items.forEach((item, index) => {
+      doc.text(`${index + 1}. ID: ${item.id}`, 110, yPos);
+      doc.text(`   Name: ${item.name}`, 110, yPos + 5);
+      doc.text(`   Qty: ${item.qty || 1} | Size: ${item.size || 'N/A'}`, 110, yPos + 10);
+      yPos += 18;
+    });
+
+    // Footer
+    doc.line(20, 270, 190, 270);
+    doc.setFontSize(9);
+    doc.setTextColor(150);
+    doc.text('Thank you for shopping with Mukil Fabrics!', 105, 278, { align: 'center' });
+    doc.text('Visit us again: mukil-fabrics.vercel.app', 105, 283, { align: 'center' });
+
+    // Save PDF
+    doc.save(`Shipping_Label_${order.id.slice(0, 8)}.pdf`);
+  };
 
   // Assign to window for global access (from HTML onclicks)
   window.openModal = openModal;
