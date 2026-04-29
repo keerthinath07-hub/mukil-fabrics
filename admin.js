@@ -370,20 +370,21 @@ document.addEventListener('DOMContentLoaded', () => {
         reviews: reviews
       };
 
-      console.log('💾 Triggering save (isNew=' + isNew + ')...');
-
-      // FIRE AND FORGET
       if (isNew) {
-        addDoc(collection(db, 'mukil_products'), product).catch(err => console.error("Background Write Error:", err));
+        await addDoc(collection(db, 'mukil_products'), product);
       } else {
-        setDoc(doc(db, 'mukil_products', idField), product).catch(err => console.error("Background Write Error:", err));
+        await setDoc(doc(db, 'mukil_products', idField), product);
       }
 
       showDbBanner('success', '🎉 Product saved successfully!');
       closeModal();
     } catch (err) {
       console.error('❌ Error in save process:', err);
-      alert('❌ Error processing form:\n' + err.message);
+      if (err.code === 'permission-denied') {
+        alert('❌ PERMISSION DENIED!\n\nYour Firebase Firestore rules are blocking writes. You need to update your database rules to allow writing.\n\nGo to Firebase Console -> Firestore Database -> Rules, and change "allow read, write: if false;" to "allow read, write: if true;"');
+      } else {
+        alert('❌ Error processing form:\n' + err.message);
+      }
     } finally {
       saveBtn.disabled = false;
       saveBtn.textContent = originalBtnText;
