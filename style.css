@@ -449,8 +449,13 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 600; line-height
 .quickview-modal.active .quickview-backdrop { opacity: 1; }
 .quickview-content { position: relative; background: #fff; width: 100%; max-width: 900px; border-radius: var(--radius); box-shadow: var(--shadow-lg); overflow: hidden; z-index: 2001; opacity: 0; transform: translateY(20px); transition: all 0.3s; max-height: 90vh; overflow-y: auto; }
 .quickview-modal.active .quickview-content { opacity: 1; transform: translateY(0); }
-.quickview-close { position: absolute; top: 15px; right: 15px; width: 40px; height: 40px; background: rgba(255,255,255,0.8); border-radius: 50%; font-size: 1.5rem; z-index: 10; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.3s; border: none; }
-.quickview-close:hover { background: #eee; }
+.quickview-close { 
+  position: absolute; top: 15px; right: 15px; width: 40px; height: 40px; 
+  background: #fff; border-radius: 50%; font-size: 1.5rem; z-index: 2010; 
+  display: flex; align-items: center; justify-content: center; cursor: pointer; 
+  transition: background 0.3s; border: 1px solid var(--border); box-shadow: var(--shadow-sm); 
+}
+.quickview-close:hover { background: #f9f9f9; }
 .quickview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
 .qv-gallery { display: flex; flex-direction: column; gap: 10px; padding: 2rem 0 2rem 2rem; }
 .qv-main-image { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: var(--radius); }
@@ -545,9 +550,16 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 600; line-height
   .size-label { width: 26px; height: 26px; font-size: 0.65rem; }
   .quick-add-btn { display: none; /* Hide on mobile, rely on tap for quick view */ }
   
-  .quickview-grid { grid-template-columns: 1fr; }
-  .qv-image { height: 400px; }
-  .qv-details { padding: 1.5rem; }
+  .quickview-modal { padding: 0.5rem; }
+  .quickview-content { max-height: 95vh; border-radius: 12px; }
+  .quickview-close { top: 10px; right: 10px; width: 36px; height: 36px; background: #fff; position: fixed; }
+  .quickview-grid { grid-template-columns: 1fr; gap: 0; }
+  .qv-gallery { padding: 0.5rem; }
+  .qv-main-image { border-radius: 8px; }
+  .qv-details { padding: 1.5rem 1rem 2.5rem; }
+  .qv-price { margin-bottom: 1.5rem; }
+  .qv-desc { margin-bottom: 1.5rem; }
+  .qv-add-btn { position: sticky; bottom: 0; left: 0; margin-top: 1rem; box-shadow: 0 -10px 20px rgba(0,0,0,0.05); }
   
   .footer-grid { grid-template-columns: 1fr; }
   .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
