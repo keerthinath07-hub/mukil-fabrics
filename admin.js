@@ -370,17 +370,24 @@ document.addEventListener('DOMContentLoaded', () => {
         reviews: reviews
       };
 
+      const withTimeout = (promise, ms) => Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+      ]);
+
       if (isNew) {
-        await addDoc(collection(db, 'mukil_products'), product);
+        await withTimeout(addDoc(collection(db, 'mukil_products'), product), 8000);
       } else {
-        await setDoc(doc(db, 'mukil_products', idField), product);
+        await withTimeout(setDoc(doc(db, 'mukil_products', idField), product), 8000);
       }
 
       showDbBanner('success', '🎉 Product saved successfully!');
       closeModal();
     } catch (err) {
       console.error('❌ Error in save process:', err);
-      if (err.code === 'permission-denied') {
+      if (err.message === 'timeout') {
+        alert('❌ SAVE TIMEOUT!\n\nThe database took too long to respond. This usually happens if your internet connection is weak, or a firewall is blocking Firebase.\n\nPlease check your connection and try again.');
+      } else if (err.code === 'permission-denied') {
         alert('❌ PERMISSION DENIED!\n\nYour Firebase Firestore rules are blocking writes. You need to update your database rules to allow writing.\n\nGo to Firebase Console -> Firestore Database -> Rules, and change "allow read, write: if false;" to "allow read, write: if true;"');
       } else {
         alert('❌ Error processing form:\n' + err.message);
