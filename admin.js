@@ -14,6 +14,27 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app, "(default)");
 
+const defaultProducts = [
+  { id: 'p1', name: 'Pleated Maxi with Lining', price: 1499, originalPrice: 1999, discount: '25%', images: ['photos/Pleated maxi with lining ❤️.jpg'], category: ['all', 'maxi', 'new'], tags: ['New', 'Sale'], sizes: [{ size: 'S', available: true, quantity: 10 }, { size: 'M', available: true, quantity: 10 }, { size: 'L', available: true, quantity: 10 }, { size: 'XL', available: true, quantity: 10 }, { size: 'XXL', available: true, quantity: 10 }], reviews: 45 },
+  { id: 'p2', name: 'Pleated Maxi with Lining', price: 1499, originalPrice: 1999, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (1).jpg'], category: ['all', 'maxi'], tags: ['Bestseller'], sizes: [{ size: 'S', available: true, quantity: 10 }, { size: 'M', available: true, quantity: 10 }, { size: 'L', available: true, quantity: 10 }, { size: 'XL', available: true, quantity: 10 }, { size: 'XXL', available: true, quantity: 10 }], reviews: 32 },
+  { id: 'p3', name: 'Pleated Maxi with Lining', price: 1499, originalPrice: 1999, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (2).jpg'], category: ['all', 'maxi'], tags: [], sizes: [{ size: 'S', available: true, quantity: 10 }, { size: 'M', available: true, quantity: 10 }, { size: 'L', available: true, quantity: 10 }, { size: 'XL', available: true, quantity: 10 }, { size: 'XXL', available: true, quantity: 10 }], reviews: 18 },
+  { id: 'p4', name: 'Pleated Maxi with Lining', price: 1499, originalPrice: 1999, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (3).jpg'], category: ['all', 'maxi'], tags: ['Sale'], sizes: [{ size: 'S', available: true, quantity: 10 }, { size: 'M', available: true, quantity: 10 }, { size: 'L', available: true, quantity: 10 }, { size: 'XL', available: true, quantity: 10 }, { size: 'XXL', available: true, quantity: 10 }], reviews: 25 },
+  { id: 'p5', name: 'Pleated Maxi with Lining', price: 1499, originalPrice: 1999, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (4).jpg'], category: ['all', 'maxi', 'bestseller'], tags: ['Trending'], sizes: [{ size: 'S', available: true, quantity: 10 }, { size: 'M', available: true, quantity: 10 }, { size: 'L', available: true, quantity: 10 }, { size: 'XL', available: true, quantity: 10 }, { size: 'XXL', available: true, quantity: 10 }], reviews: 50 },
+  { id: 'p6', name: 'Pleated Maxi with Lining', price: 1499, originalPrice: 1999, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (5).jpg'], category: ['all', 'maxi'], tags: [], sizes: [{ size: 'S', available: true, quantity: 10 }, { size: 'M', available: true, quantity: 10 }, { size: 'L', available: true, quantity: 10 }, { size: 'XL', available: true, quantity: 10 }, { size: 'XXL', available: true, quantity: 10 }], reviews: 11 },
+  { id: 'p7', name: 'Pleated Maxi with Lining', price: 1499, originalPrice: 1999, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (7).jpg'], category: ['all', 'maxi'], tags: ['New'], sizes: [{ size: 'S', available: true, quantity: 10 }, { size: 'M', available: true, quantity: 10 }, { size: 'L', available: true, quantity: 10 }, { size: 'XL', available: true, quantity: 10 }, { size: 'XXL', available: true, quantity: 10 }], reviews: 29 },
+  { id: 'p8', name: 'Pleated Maxi with Lining', price: 1499, originalPrice: 1999, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (8).jpg'], category: ['all', 'maxi'], tags: [], sizes: [{ size: 'S', available: true, quantity: 10 }, { size: 'M', available: true, quantity: 10 }, { size: 'L', available: true, quantity: 10 }, { size: 'XL', available: true, quantity: 10 }, { size: 'XXL', available: true, quantity: 10 }], reviews: 14 },
+  { id: 'p9', name: 'Pleated Maxi with Lining', price: 1499, originalPrice: 1999, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (9).jpg'], category: ['all', 'maxi', 'new'], tags: ['Sale'], sizes: [{ size: 'S', available: true, quantity: 10 }, { size: 'M', available: true, quantity: 10 }, { size: 'L', available: true, quantity: 10 }, { size: 'XL', available: true, quantity: 10 }, { size: 'XXL', available: true, quantity: 10 }], reviews: 36 },
+  { id: 'p10', name: 'Pleated Maxi with Lining', price: 1499, originalPrice: 1999, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (10).jpg'], category: ['all', 'maxi'], tags: [], sizes: [{ size: 'S', available: true, quantity: 10 }, { size: 'M', available: true, quantity: 10 }, { size: 'L', available: true, quantity: 10 }, { size: 'XL', available: true, quantity: 10 }, { size: 'XXL', available: true, quantity: 10 }], reviews: 21 },
+  { id: 'p11', name: 'Pleated Maxi with Lining', price: 1499, originalPrice: 1999, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (11).jpg'], category: ['all', 'maxi'], tags: ['Trending'], sizes: [{ size: 'S', available: true, quantity: 10 }, { size: 'M', available: true, quantity: 10 }, { size: 'L', available: true, quantity: 10 }, { size: 'XL', available: true, quantity: 10 }, { size: 'XXL', available: true, quantity: 10 }], reviews: 42 },
+  { id: 'p12', name: 'Pleated Maxi with Lining', price: 1499, originalPrice: 1999, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (12).jpg'], category: ['all', 'maxi'], tags: [], sizes: [{ size: 'S', available: true, quantity: 10 }, { size: 'M', available: true, quantity: 10 }, { size: 'L', available: true, quantity: 10 }, { size: 'XL', available: true, quantity: 10 }, { size: 'XXL', available: true, quantity: 10 }], reviews: 9 }
+];
+
+async function seedDatabase() {
+  for (const p of defaultProducts) {
+    await setDoc(doc(db, 'mukil_products', p.id), p);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   let products = [];
   let orders = [];
@@ -123,20 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       // Load the 12 photos as fallback
-      products = [
-        { id: 'p1', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️.jpg'], sizes: [], category: ['all', 'maxi', 'new'], tags: ['New', 'Sale'] },
-        { id: 'p2', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (1).jpg'], sizes: [], category: ['all', 'maxi'], tags: ['Bestseller'] },
-        { id: 'p3', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (2).jpg'], sizes: [], category: ['all', 'maxi'], tags: [] },
-        { id: 'p4', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (3).jpg'], sizes: [], category: ['all', 'maxi'], tags: ['Sale'] },
-        { id: 'p5', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (4).jpg'], sizes: [], category: ['all', 'maxi', 'bestseller'], tags: ['Trending'] },
-        { id: 'p6', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (5).jpg'], sizes: [], category: ['all', 'maxi'], tags: [] },
-        { id: 'p7', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (7).jpg'], sizes: [], category: ['all', 'maxi'], tags: ['New'] },
-        { id: 'p8', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (8).jpg'], sizes: [], category: ['all', 'maxi'], tags: [] },
-        { id: 'p9', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (9).jpg'], sizes: [], category: ['all', 'maxi', 'new'], tags: ['Sale'] },
-        { id: 'p10', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (10).jpg'], sizes: [], category: ['all', 'maxi'], tags: [] },
-        { id: 'p11', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (11).jpg'], sizes: [], category: ['all', 'maxi'], tags: ['Trending'] },
-        { id: 'p12', name: 'Pleated Maxi with Lining', price: 1499, discount: '25%', images: ['photos/Pleated maxi with lining ❤️ (12).jpg'], sizes: [], category: ['all', 'maxi'], tags: [] }
-      ];
+      products = JSON.parse(JSON.stringify(defaultProducts));
       renderTable();
     }
   }, 2000);
@@ -161,8 +169,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderTable();
+      if (snapshot.size < 5) {
+        console.log("🌱 Admin: Injecting default photos into database...");
+        seedDatabase();
+      } else {
+        products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderTable();
+      }
     } catch (err) {
       console.error("❌ Admin: Error processing products snapshot:", err);
     }
