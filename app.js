@@ -64,7 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initAnnouncementBar();
   initHeaderScroll();
   initMobileNav();
-  initHeroSlider();
   initSupabase(); // Real-time listener for products
   updateCartUI();
   initAnimations();
@@ -190,41 +189,6 @@ function initAnnouncementBar() {
     currentSlide = (currentSlide + 1) % 4;
     track.style.transform = `translateX(-${currentSlide * 25}%)`;
   }, 3500);
-}
-
-// --- HERO SLIDER ---
-let heroSlideIndex = 0;
-let heroSliderInterval;
-
-function initHeroSlider() {
-  const slides = document.querySelectorAll('.hero-slide');
-  const dots = document.querySelectorAll('.slider-dots .dot');
-  if (!slides.length) return;
-
-  function showSlide(index) {
-    slides.forEach(s => s.classList.remove('active'));
-    dots.forEach(d => d.classList.remove('active'));
-    
-    heroSlideIndex = (index + slides.length) % slides.length;
-    slides[heroSlideIndex].classList.add('active');
-    if (dots[heroSlideIndex]) dots[heroSlideIndex].classList.add('active');
-  }
-
-  window.goToSlide = function(index) {
-    showSlide(index);
-    resetHeroTimer();
-  };
-
-  function nextHeroSlide() {
-    showSlide(heroSlideIndex + 1);
-  }
-
-  function resetHeroTimer() {
-    clearInterval(heroSliderInterval);
-    heroSliderInterval = setInterval(nextHeroSlide, 6000);
-  }
-
-  resetHeroTimer();
 }
 
 function initHeaderScroll() {

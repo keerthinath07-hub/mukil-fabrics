@@ -252,80 +252,77 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 600; line-height
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 30%);
   mask-image: linear-gradient(to right, transparent 0%, black 30%);
 }
-/* CINEMATIC HERO SLIDER */
-.hero-slider {
-  position: relative;
-  height: 90vh;
+/* CINEMATIC BANNERS */
+.banner-section {
+  display: flex;
+  height: 85vh;
   width: 100%;
   overflow: hidden;
   background: var(--bg);
+  border-bottom: 1px solid var(--border);
 }
-.hero-slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 1.2s ease-in-out, visibility 1.2s;
-  display: flex;
-  align-items: center;
-}
-.hero-slide.active {
-  opacity: 1;
-  visibility: visible;
-  z-index: 5;
+.banner-section.reverse {
+  flex-direction: row-reverse;
 }
 
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+.banner-image {
+  flex: 1.2;
+  height: 100%;
+  overflow: hidden;
 }
-.hero-bg::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to right, rgba(255,255,255,0.9) 30%, rgba(255,255,255,0) 70%);
-}
-.hero-bg img {
+.banner-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 25%;
-  transition: transform 10s ease-out;
+  object-position: center 20%;
+  transition: transform 6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-@media (max-width: 768px) {
-  .hero-bg { display: none; }
-  .hero-content-wrapper { width: 100% !important; padding: 0 1.5rem; text-align: center; }
-  .hero-actions { justify-content: center; }
-  .hero-desc { margin-left: auto; margin-right: auto; }
-}
-.hero-slide.active .hero-bg img {
-  transform: scale(1.1);
+.banner-section:hover .banner-image img {
+  transform: scale(1.05);
 }
 
-.hero-container {
-  position: relative;
-  z-index: 10;
-  height: 100%;
+.banner-content {
+  flex: 0.8;
   display: flex;
-  align-items: center;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6rem;
+  background: #fff;
 }
-.hero-content-wrapper {
-  position: relative; z-index: 2;
-  width: 50%;
-  padding-right: 2rem;
+.banner-section.reverse .banner-content {
+  padding-left: 8rem;
 }
-.hero-text-content { max-width: 600px; }
+.banner-section:not(.reverse) .banner-content {
+  padding-right: 8rem;
+}
+
 .hero-tag {
-  display: inline-block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 2px; color: var(--accent); margin-bottom: 1rem;
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 1rem;
 }
-.hero-main-title { font-size: clamp(3rem, 5vw, 4.5rem); margin-bottom: 1.5rem; }
-.hero-desc { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 2.5rem; line-height: 1.6; }
-.hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+.hero-main-title {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  color: var(--text-main);
+}
+.hero-desc {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  max-width: 450px;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+}
 
 /* COLLECTIONS GRID */
 .collection-grid {
@@ -578,13 +575,12 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 600; line-height
   .mega-menu-inner { grid-template-columns: 1fr; gap: 1.5rem; padding: 0; }
   .mega-promo { display: none; }
   
-  .hero-slider { height: auto; display: flex; flex-direction: column; padding-top: 2rem; }
-  .hero-slide { position: relative; opacity: 1; visibility: visible; display: none; height: auto; }
-  .hero-slide.active { display: block; }
-  .hero-container { height: auto; padding: 2rem 1.5rem 4rem; width: 100%; }
-  .hero-content-wrapper { width: 100%; padding-right: 0; text-align: center; }
-  .hero-bg { display: none; }
-  .slider-dots { bottom: 15px; }
+  .banner-section, .banner-section.reverse { flex-direction: column; height: auto; }
+  .banner-image { height: 400px; }
+  .banner-content { padding: 3rem 1.5rem; text-align: center; }
+  .banner-section.reverse .banner-content, .banner-section:not(.reverse) .banner-content { padding: 3rem 1.5rem; }
+  .hero-desc { margin: 0 auto 2rem; }
+  .hero-actions { justify-content: center; }
 
   .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
   .size-overlay { padding: 0.5rem; position: static; transform: none; background: transparent; }
