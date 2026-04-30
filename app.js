@@ -606,10 +606,7 @@ function updateCartUI() {
 // --- CHECKOUT LOGIC ---
 function openCheckout() {
   if (cart.length === 0) return;
-  checkoutTotalBtn.textContent = `₹${cart.reduce((sum, item) => sum + (item.price * item.qty), 0)}`;
-  closeCart();
-  checkoutModal.classList.add('active');
-  document.body.style.overflow = 'hidden';
+  window.location.href = 'checkout.html';
 }
 
 function closeCheckout() { checkoutModal.classList.remove('active'); document.body.style.overflow = ''; }
