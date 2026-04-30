@@ -75,6 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initSupabase(); // Real-time listener for products
   updateCartUI();
   initAnimations();
+  initUserModule();
   
   if(categoryTabs) {
     categoryTabs.addEventListener('click', (e) => {
@@ -705,4 +706,126 @@ async function processCheckout(e) {
   closeCheckout();
   checkoutForm.reset();
   showToast("Order placed successfully!");
+}
+
+// --- USER MODULE (AUTH & ORDERS) ---
+async function initUserModule() {
+  const userBtn = document.getElementById('userBtn');
+  const userModal = document.getElementById('userModal');
+  const userClose = document.getElementById('userClose');
+  const userBackdrop = document.getElementById('userBackdrop');
+  const googleLoginMain = document.getElementById('googleLoginMain');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  if (!userBtn) return;
+
+  // Open Modal
+  userBtn.addEventListener('click', () => {
+    userModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    checkUserSession();
+  });
+
+  // Close Modal
+  const closeModal = () => {
+    userModal.classList.remove('active');
+    document.body.style.overflow = '';
+  };
+  if (userClose) userClose.addEventListener('click', closeModal);
+  if (userBackdrop) userBackdrop.addEventListener('click', closeModal);
+
+  // Login
+  if (googleLoginMain) {
+    googleLoginMain.addEventListener('click', async () => {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.href }
+      });
+      if (error) showToast("Login failed: " + error.message);
+    });
+  }
+
+  // Logout
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.reload();
+    });
+  }
+
+  // Check Session initially
+  checkUserSession();
+}
+
+async function checkUserSession() {
+  const { data: { session } } = await supabase.auth.getSession();
+  const guestView = document.getElementById('userGuestView');
+  const profileView = document.getElementById('userProfileView');
+
+  if (session) {
+    guestView.style.display = 'none';
+    profileView.style.display = 'block';
+    
+    // Update Profile UI
+    const user = session.user;
+    document.getElementById('userName').textContent = user.user_metadata.full_name || 'Valued Customer';
+    document.getElementById('userEmail').textContent = user.email;
+    
+    const userImg = document.getElementById('userImg');
+    const placeholder = document.getElementById('userIconPlaceholder');
+    if (user.user_metadata.avatar_url) {
+      userImg.src = user.user_metadata.avatar_url;
+      userImg.style.display = 'block';
+      placeholder.style.display = 'none';
+    }
+
+    fetchUserOrders(user.email);
+  } else {
+    guestView.style.display = 'block';
+    profileView.style.display = 'none';
+  }
+}
+
+async function fetchUserOrders(email) {
+  const orderList = document.getElementById('orderList');
+  orderList.innerHTML = '<p style="text-align:center; padding:20px; color:#999;">Fetching your orders...</p>';
+
+  try {
+    // Note: This requires the 'mukil_orders' table to have a 'customer' JSONB column 
+    // or we might need to filter manually if it's nested JSON.
+    // Assuming existing structure: customer: { email, ... }
+    const { data: orders, error } = await supabase
+      .from('mukil_orders')
+      .select('*')
+      .order('date', { ascending: false });
+
+    if (error) throw error;
+
+    // Filter orders by email in JS if it's nested in JSONB
+    const userOrders = orders.filter(o => o.customer && o.customer.email === email);
+
+    if (userOrders.length === 0) {
+      orderList.innerHTML = '<p style="text-align:center; padding:20px; color:#999;">You haven\'t placed any orders yet.</p>';
+      return;
+    }
+
+    orderList.innerHTML = userOrders.map(order => `
+      <div class="user-order-card" style="padding: 15px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 12px; background: #fff;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+          <div>
+            <div style="font-weight: 700; font-size: 0.95rem;">Order #${order.id}</div>
+            <div style="font-size: 0.8rem; color: #999;">${new Date(order.date).toLocaleDateString()}</div>
+          </div>
+          <div style="font-weight: 700; color: var(--accent);">₹${order.total}</div>
+        </div>
+        <div style="font-size: 0.85rem; color: #666; border-top: 1px dashed #eee; padding-top: 10px;">
+          ${order.items.map(item => `${item.qty}x ${item.name} (${item.size})`).join(', ')}
+        </div>
+      </div>
+    `).join('');
+
+  } catch (err) {
+    console.error("Error fetching orders:", err);
+    orderList.innerHTML = '<p style="text-align:center; padding:20px; color:red;">Failed to load orders.</p>';
+  }
 }

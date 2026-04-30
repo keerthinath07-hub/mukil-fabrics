@@ -82,7 +82,7 @@
 
       <div class="nav-icons">
         <button aria-label="Search" class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
-        <button aria-label="Account" class="icon-btn hide-mobile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></button>
+        <button aria-label="Account" class="icon-btn" id="userBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></button>
         <button aria-label="Cart" class="icon-btn cart-btn" id="cartBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
           <span class="cart-count" id="cartCount">0</span>
@@ -418,6 +418,52 @@
 
   <!-- NOTIFICATION TOAST -->
   <div class="toast" id="toast"></div>
+
+  <!-- USER PROFILE / ORDER HISTORY MODAL -->
+  <div class="quickview-modal" id="userModal">
+    <div class="quickview-backdrop" id="userBackdrop"></div>
+    <div class="quickview-content" style="max-width: 550px; padding: 0; border-radius: 12px; overflow: hidden;">
+      <button class="quickview-close" id="userClose" aria-label="Close modal">×</button>
+      
+      <!-- Guest View -->
+      <div id="userGuestView" class="user-modal-section" style="padding: 40px; text-align: center;">
+        <div class="user-avatar-large" style="margin-bottom: 20px; color: #ddd;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 80px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </div>
+        <h2 style="font-family: var(--font-title); margin-bottom: 10px;">Sign in to Mukil Fabrics</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">Track your orders, save shipping details, and get personalized offers.</p>
+        <button id="googleLoginMain" class="btn-outline google-btn" style="width: 100%; justify-content: center; gap: 12px; padding: 12px; border-radius: 6px;">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 20px;">
+          <span>Sign in with Google</span>
+        </button>
+      </div>
+
+      <!-- Logged In View -->
+      <div id="userProfileView" class="user-modal-section" style="display: none;">
+        <div class="user-profile-header" style="padding: 30px; background: #f9f9f9; border-bottom: 1px solid #eee;">
+          <div style="display: flex; align-items: center; gap: 15px;">
+            <img id="userImg" src="" alt="" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: none;">
+            <div id="userIconPlaceholder" style="width: 60px; height: 60px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; color: #999;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 30px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+            <div style="flex: 1;">
+              <h3 id="userName" style="font-size: 1.1rem; margin: 0; font-weight: 700;">User Name</h3>
+              <p id="userEmail" style="color: var(--text-muted); font-size: 0.85rem; margin: 2px 0 0;">user@example.com</p>
+            </div>
+            <button id="logoutBtn" style="font-size: 0.8rem; color: #ff4444; font-weight: 700; text-transform: uppercase;">Logout</button>
+          </div>
+        </div>
+
+        <div class="user-orders-section" style="padding: 30px; max-height: 400px; overflow-y: auto;">
+          <h3 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px; font-weight: 800;">My Orders</h3>
+          <div id="orderList" class="order-list">
+            <!-- Orders injected by JS -->
+            <p style="color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 20px;">No orders found yet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="app.js?v=1.1"></script>
 </body>
