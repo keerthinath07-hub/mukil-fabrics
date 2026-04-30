@@ -55,7 +55,14 @@ const checkoutForm = document.getElementById('checkoutForm');
 const checkoutTotalBtn = document.getElementById('checkoutTotalBtn');
 
 // --- INITIALIZATION ---
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Check if we just came back from a login redirect
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session && window.location.hash.includes('access_token') && cart.length > 0) {
+    window.location.href = 'checkout.html';
+    return;
+  }
+
   // Check if running via file:// (ES Modules won't work)
   if (window.location.protocol === 'file:') {
     alert("CRITICAL: ES Modules do not work when opening HTML files directly via 'file://'. Please use a local server (e.g., Live Server in VS Code).");
