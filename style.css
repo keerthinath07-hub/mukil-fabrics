@@ -137,13 +137,18 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 600; line-height
 }
 .announcement-track {
   display: flex;
-  width: 400%; /* 4 slides */
-  transition: transform 0.5s ease-in-out;
+  white-space: nowrap;
+  animation: announcement-marquee 30s linear infinite;
 }
 .announcement-slide {
-  width: 25%;
-  text-align: center;
-  padding: 0 1rem;
+  padding: 0 4rem;
+  display: flex;
+  align-items: center;
+}
+
+@keyframes announcement-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 /* HEADER & MEGA MENU */
@@ -306,11 +311,19 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 600; line-height
   color: #fff;
   opacity: 0;
   transform: translateY(20px);
-  transition: all 0.8s ease-out;
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  pointer-events: none;
 }
 .ott-slide.active .ott-content {
   opacity: 1;
   transform: translateY(0);
+  pointer-events: auto;
+}
+/* Ensure wordings are visible if the user is swiping and the slide is mostly visible */
+@media (hover: none) {
+  .ott-slider:not(:active) .ott-slide.active .ott-content {
+    opacity: 1;
+  }
 }
 
 .ott-tag {
@@ -404,6 +417,11 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 600; line-height
   inset: 0;
   width: 0%;
   background: var(--accent);
+}
+
+/* Pause marquee on hover */
+.announcement-bar:hover .announcement-track {
+  animation-play-state: paused;
 }
 
 /* COLLECTIONS GRID */
@@ -529,12 +547,43 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 600; line-height
 .product-rating { display: flex; align-items: center; gap: 0.25rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted); }
 .stars { color: #FFD700; letter-spacing: 2px; }
 
-/* TRUST BAR */
-.trust-bar { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-.trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; text-align: center; }
+/* TRUST BAR MARQUEE */
+.trust-bar { 
+  border-top: 1px solid var(--border); 
+  border-bottom: 1px solid var(--border); 
+  padding: 3rem 0;
+  overflow: hidden;
+  background: #fff;
+}
+.trust-marquee-container {
+  display: flex;
+  overflow: hidden;
+  user-select: none;
+}
+.trust-marquee-track {
+  display: flex;
+  white-space: nowrap;
+  animation: trust-marquee 40s linear infinite;
+  gap: 4rem;
+  padding: 0 2rem;
+}
+.trust-item {
+  flex: 0 0 auto;
+  text-align: center;
+  min-width: 200px;
+}
 .trust-icon { font-size: 2rem; margin-bottom: 1rem; }
-.trust-item h4 { font-size: 1rem; margin-bottom: 0.5rem; }
+.trust-item h4 { font-size: 1rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px; }
 .trust-item p { font-size: 0.85rem; color: var(--text-muted); }
+
+@keyframes trust-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-50% - 2rem)); }
+}
+
+.trust-bar:hover .trust-marquee-track {
+  animation-play-state: paused;
+}
 
 /* INSTA GRID */
 .insta-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }

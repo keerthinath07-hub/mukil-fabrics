@@ -185,11 +185,10 @@ function initAnimations() {
 function initAnnouncementBar() {
   const track = document.getElementById('announcementTrack');
   if(!track) return;
-  let currentSlide = 0;
-  setInterval(() => {
-    currentSlide = (currentSlide + 1) % 4;
-    track.style.transform = `translateX(-${currentSlide * 25}%)`;
-  }, 3500);
+  
+  // Clone the content to make it seamless
+  const originalContent = track.innerHTML;
+  track.innerHTML = originalContent + originalContent;
 }
 
 // --- OTT SLIDER ---
@@ -197,46 +196,151 @@ let ottIndex = 0;
 let ottInterval;
 
 function initOttSlider() {
-  const slides = document.querySelectorAll('.ott-slide');
+  const slider = document.getElementById('ottSlider');
+  let slides = Array.from(slider.querySelectorAll('.ott-slide'));
   const segments = document.querySelectorAll('.progress-segment');
   const nextBtn = document.getElementById('ottNext');
   const prevBtn = document.getElementById('ottPrev');
+  
   if (!slides.length) return;
 
-  function showOttSlide(index) {
-    slides.forEach(s => s.classList.remove('active'));
-    segments.forEach(s => s.classList.remove('active'));
+  // 1. CLONING FOR INFINITE LOOP
+  const firstClone = slides[0].cloneNode(true);
+  const lastClone = slides[slides.length - 1].cloneNode(true);
+  
+  firstClone.classList.remove('active');
+  lastClone.classList.remove('active');
+  
+  slider.appendChild(firstClone);
+  slider.insertBefore(lastClone, slides[0]);
+  
+  // Re-fetch slides to include clones
+  const allSlides = Array.from(slider.querySelectorAll('.ott-slide'));
+  const totalOriginal = slides.length;
+  
+  let isJumping = false;
+
+  function updateIndicators(index) {
+    // Ensure index is within 0 to totalOriginal - 1
+    const normalizedIndex = (index + totalOriginal) % totalOriginal;
     
-    ottIndex = (index + slides.length) % slides.length;
-    slides[ottIndex].classList.add('active');
-    if (segments[ottIndex]) segments[ottIndex].classList.add('active');
-    
-    // Scroll the slider container
-    const slider = document.getElementById('ottSlider');
-    slider.scrollTo({
-      left: slides[ottIndex].offsetLeft,
-      behavior: 'smooth'
+    // index is 0-based for original slides
+    segments.forEach((s, i) => {
+      const wasActive = s.classList.contains('active');
+      const shouldBeActive = i === normalizedIndex;
+      
+      if (shouldBeActive && !wasActive) {
+        // Reset the progress bar animation by briefly removing and re-adding
+        s.classList.remove('active');
+        void s.offsetWidth; // Force reflow
+      }
+      s.classList.toggle('active', shouldBeActive);
+    });
+
+    // Update active class on slides for animations
+    // We need to set active on both the real slide and its clone
+    allSlides.forEach((s, i) => {
+      // Slides are: [CloneLast, Slide0, Slide1, ..., SlideN, CloneFirst]
+      // Slide index i maps to original index:
+      let originalIdx;
+      if (i === 0) originalIdx = totalOriginal - 1; // Last slide clone
+      else if (i === allSlides.length - 1) originalIdx = 0; // First slide clone
+      else originalIdx = i - 1;
+      
+      s.classList.toggle('active', originalIdx === normalizedIndex);
     });
   }
 
-  window.goToOttSlide = function(index) {
-    showOttSlide(index);
-    startOttTimer();
+  function getActiveIndex() {
+    const width = slider.offsetWidth;
+    if (width === 0) return 0;
+    const scrollLeft = slider.scrollLeft;
+    return Math.round(scrollLeft / width) - 1;
+  }
+
+  // Handle the "Infinite" jump
+  slider.addEventListener('scroll', () => {
+    if (isJumping) return;
+
+    const width = slider.offsetWidth;
+    const scrollLeft = slider.scrollLeft;
+    
+    // If we are at the first clone (last slide's clone)
+    if (scrollLeft <= 2) { // Small buffer for sub-pixel issues
+      isJumping = true;
+      slider.scrollLeft = width * totalOriginal;
+      updateIndicators(totalOriginal - 1);
+      setTimeout(() => isJumping = false, 50);
+    } 
+    // If we are at the last clone (first slide's clone)
+    else if (scrollLeft >= width * (totalOriginal + 1) - 2) {
+      isJumping = true;
+      slider.scrollLeft = width;
+      updateIndicators(0);
+      setTimeout(() => isJumping = false, 50);
+    }
+
+    const currentIndex = getActiveIndex();
+    const normalizedIndex = (currentIndex + totalOriginal) % totalOriginal;
+    
+    if (normalizedIndex !== ottIndex) {
+      ottIndex = normalizedIndex;
+      updateIndicators(ottIndex);
+    }
+  });
+
+  // INITIAL POSITION (Start at the real first slide)
+  const setInitialPos = () => {
+    slider.scrollLeft = slider.offsetWidth;
+    updateIndicators(0);
   };
 
-  if (nextBtn) nextBtn.addEventListener('click', () => goToOttSlide(ottIndex + 1));
-  if (prevBtn) prevBtn.addEventListener('click', () => goToOttSlide(ottIndex - 1));
+  if (document.readyState === 'complete') {
+    setInitialPos();
+  } else {
+    window.addEventListener('load', setInitialPos);
+  }
+
+  // PUBLIC GOTO FUNCTION
+  window.goToOttSlide = function(index) {
+    startOttTimer();
+    slider.scrollTo({
+      left: slider.offsetWidth * (index + 1),
+      behavior: 'smooth'
+    });
+  };
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      const next = getActiveIndex() + 1;
+      slider.scrollTo({ left: slider.offsetWidth * (next + 1), behavior: 'smooth' });
+      startOttTimer();
+    });
+  }
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      const prev = getActiveIndex() - 1;
+      slider.scrollTo({ left: slider.offsetWidth * (prev + 1), behavior: 'smooth' });
+      startOttTimer();
+    });
+  }
 
   function startOttTimer() {
     clearInterval(ottInterval);
     ottInterval = setInterval(() => {
-      showOttSlide(ottIndex + 1);
+      const next = getActiveIndex() + 1;
+      slider.scrollTo({ left: slider.offsetWidth * (next + 1), behavior: 'smooth' });
     }, 6000);
   }
 
-  // Initial call
-  showOttSlide(0);
   startOttTimer();
+  
+  // Pause/Resume timer on interaction
+  slider.addEventListener('touchstart', () => clearInterval(ottInterval));
+  slider.addEventListener('mousedown', () => clearInterval(ottInterval));
+  slider.addEventListener('touchend', startOttTimer);
+  slider.addEventListener('mouseup', startOttTimer);
 }
 
 function initHeaderScroll() {
