@@ -17,7 +17,7 @@ const itemCountEl = document.getElementById('itemCount');
 const placeOrderBtn = document.getElementById('placeOrderBtn');
 
 // --- INITIALIZATION ---
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   if (cart.length === 0) {
     window.location.href = 'index.html'; // Redirect if cart is empty
     return;
@@ -25,7 +25,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderSummary();
   initFormListeners();
+  await checkSession();
 });
+
+async function checkSession() {
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  if (session) {
+    console.log("Logged in user:", session.user);
+    // Auto-fill some fields if possible
+    if (session.user.user_metadata) {
+      const meta = session.user.user_metadata;
+      if (meta.full_name) {
+        const names = meta.full_name.split(' ');
+        if (document.getElementById('firstName')) document.getElementById('firstName').value = names[0] || '';
+        if (document.getElementById('lastName')) document.getElementById('lastName').value = names.slice(1).join(' ') || '';
+      }
+    }
+    // Skip step 0 if logged in
+    skipToStep(1);
+  } else {
+    // Add listener for Google Login
+    const googleBtn = document.getElementById('googleLoginBtn');
+    if (googleBtn) {
+      googleBtn.addEventListener('click', loginWithGoogle);
+    }
+  }
+}
+
+async function loginWithGoogle() {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.href
+    }
+  });
+  if (error) {
+    console.error("Login error:", error);
+    Swal.fire('Error', 'Failed to sign in with Google', 'error');
+  }
+}
+
+function skipToStep(step) {
+  const step0 = document.getElementById('step0');
+  if (step0) {
+    step0.classList.remove('active');
+    step0.classList.add('completed');
+    const targetStep = document.getElementById(`step${step}`);
+    if (targetStep) targetStep.classList.add('active');
+    currentStep = step;
+  }
+}
 
 function renderSummary() {
   const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);

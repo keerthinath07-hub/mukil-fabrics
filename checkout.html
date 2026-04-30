@@ -32,8 +32,34 @@
           <h1 class="checkout-title">Checkout</h1>
           
           <div class="checkout-steps">
+            <!-- Step 0: Authentication -->
+            <div class="step-item active" id="step0">
+              <div class="step-header">
+                <span class="step-num">0</span>
+                <h2>Account</h2>
+              </div>
+              <div class="step-content">
+                <div class="auth-options">
+                  <div class="auth-card">
+                    <h3>Sign In</h3>
+                    <p>Track orders, save addresses, and checkout faster.</p>
+                    <button id="googleLoginBtn" class="btn-outline google-btn">
+                      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                      <span>Sign in with Google</span>
+                    </button>
+                  </div>
+                  <div class="auth-divider"><span>OR</span></div>
+                  <div class="auth-card">
+                    <h3>Guest Checkout</h3>
+                    <p>No account? No problem. Checkout as a guest.</p>
+                    <button type="button" class="btn-primary" onclick="nextStep(0)">Continue as Guest</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Step 1: Shipping Address -->
-            <div class="step-item active" id="step1">
+            <div class="step-item" id="step1">
               <div class="step-header">
                 <span class="step-num">1</span>
                 <h2>Shipping Address</h2>

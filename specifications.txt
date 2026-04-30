@@ -1,0 +1,69 @@
+# MUKIL FABRICS - PROJECT SPECIFICATIONS REPORT
+
+## 1. Project Overview
+Mukil Fabrics is a premium e-commerce platform specializing in vibrant pleated maxi dresses. The website is designed with a "Luxury Editorial" aesthetic, prioritizing cinematic animations, high-quality typography, and a seamless user experience.
+
+## 2. Technology Stack
+- **Frontend**: HTML5, Vanilla CSS3, JavaScript (ES6+ Modules).
+- **Database**: Supabase (PostgreSQL with Real-time synchronization).
+- **UI Components**: 
+  - **SweetAlert2**: Premium modals and notifications.
+  - **Google Fonts**: Playfair Display (Serif headings), Lora (Serif body).
+  - **Emoji Datasource**: Apple-style emojis for a modern feel.
+
+## 3. Design System
+- **Aesthetic**: Minimalist Luxury / High-end Fashion Editorial.
+- **Color Palette**:
+  - Accent: #e040fb (Vibrant Magenta)
+  - Secondary: #7c4dff (Violet)
+  - Backgrounds: #ffffff (Primary), #f8f8f8 (Alternative)
+  - Typography: #111111 (Main), #666666 (Muted)
+- **Typography**: 
+  - Headings: Playfair Display (Editorial Serif)
+  - Body: Lora (Sophisticated Serif)
+
+## 4. Key Frontend Features
+### 4.1 Hero Section (OTT Slider)
+- **Seamless Looping**: Custom JavaScript logic with slide cloning for an infinite, smooth scroll.
+- **Scroll Sync**: Real-time synchronization between manual swiping and the 6-second progress indicators.
+- **Auto-play**: Intelligence-based timer that pauses during user interaction and resumes gracefully.
+
+### 4.2 Dynamic Marquees
+- **Announcement Bar**: Continuous smooth marquee for store updates.
+- **Trust Bar**: Premium horizontal marquee for brand values (Quality, Manufacturing, etc.).
+
+### 4.3 Product Grid & Interactions
+- **Real-time Sync**: Products are fetched from Supabase; any updates in the admin panel reflect instantly on the storefront.
+- **Interactive Cards**: Multi-image hover effects, quick-select size overlays, and quick-add functionality.
+- **Quick View**: Detailed product modal with gallery thumbnails and quantity selection.
+
+### 4.4 Premium Checkout (Brooks Inspired)
+- **Multi-step Flow**: 4-step progression (Shipping -> Method -> Payment -> Review).
+- **Responsive Design**: Specialized layout for mobile and tablet with a sticky order summary.
+- **Review Summary**: Detailed breakdown of shipping, payment, and cart items before order placement.
+
+## 5. Admin & Backend Features
+### 5.1 Product Management
+- **Dashboard**: `admin.html` provides a complete interface to add, edit, or delete products.
+- **Inventory Tracking**: Real-time quantity updates based on sales.
+### 5.2 Order Management
+- **Tracking**: Sequential Order IDs (e.g., OR001) stored in Supabase with customer and item details.
+- **Status Monitoring**: Admin view for tracking incoming orders and customer data.
+
+## 6. File Structure
+- `index.html`: Main storefront landing page.
+- `app.js`: Core storefront logic (Real-time sync, slider, cart).
+- `style.css`: Global design system and layout.
+- `checkout.html / .js / .css`: Dedicated premium checkout experience.
+- `admin.html / .js / .css`: Secure administrative dashboard.
+- `images/`: Brand assets and placeholder graphics.
+- `photos/`: Product photography library.
+
+## 7. Performance & SEO
+- **Responsive**: Fully optimized for Desktop, Tablet, and Mobile.
+- **SEO**: Semantic HTML5 tags, descriptive meta titles, and optimized heading hierarchy.
+- **Speed**: Minimal external dependencies, vanilla JS for fast execution.
+
+---
+Report Generated: 2026-04-30
+Mukil Fabrics – Wear the Colour of Confidence.
