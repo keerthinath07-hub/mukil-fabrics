@@ -408,25 +408,142 @@
   border-top: 1px solid #eee;
 }
 
-/* RESPONSIVE */
+/* RESPONSIVE REFINEMENTS */
+@media (max-width: 1200px) {
+  .checkout-grid {
+    gap: 40px;
+  }
+}
+
 @media (max-width: 1024px) {
   .checkout-grid {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 30px;
   }
-  
+
+  .checkout-title {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
   .checkout-summary-container {
     position: static;
-    order: -1; /* Summary on top for mobile */
+    order: -1; /* Summary on top for context */
+    padding: 20px;
+  }
+
+  .checkout-cart-items-container {
+    margin-top: 20px;
+    padding-top: 20px;
   }
 }
 
 @media (max-width: 768px) {
-  .checkout-main { padding: 30px 0; }
-  .checkout-title { font-size: 1.8rem; margin-bottom: 25px; }
-  .step-content { margin-left: 0; }
-  .checkout-form-grid { grid-template-columns: 1fr; }
-  .form-group.half, .form-group.full, .form-group.third { grid-column: span 1; }
-  .step-num { width: 32px; height: 32px; font-size: 0.9rem; }
-  .step-header h2 { font-size: 1.25rem; }
+  .checkout-main {
+    padding: 20px 0 40px;
+  }
+
+  .checkout-header {
+    padding: 15px 0;
+  }
+
+  .checkout-header-inner {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .checkout-steps::before {
+    left: 15px;
+  }
+
+  .step-num {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+  }
+
+  .step-header {
+    gap: 12px;
+  }
+
+  .step-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .step-content {
+    margin-left: 0;
+    padding-left: 44px; /* Maintain alignment with line */
+  }
+
+  /* Form spacing */
+  .checkout-form-grid {
+    gap: 15px;
+  }
+
+  .form-group label {
+    font-size: 0.75rem;
+  }
+
+  .form-group input, .form-group select {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+
+  .step-next-btn {
+    max-width: 100%;
+  }
+
+  /* Compact Cart Items on Mobile */
+  .checkout-cart-item img {
+    width: 60px;
+    height: 80px;
+  }
+
+  .checkout-cart-item-name {
+    font-size: 0.85rem;
+  }
+
+  .review-section-box {
+    padding: 15px;
+  }
+
+  .review-section-box h3 {
+    font-size: 0.8rem;
+  }
+
+  .review-section-box p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkout-main {
+    padding: 15px 0 30px;
+  }
+  
+  .container {
+    padding: 0 15px;
+  }
+
+  .step-content {
+    padding-left: 0;
+    margin-top: 10px;
+  }
+
+  .checkout-steps::before {
+    display: none; /* Hide line on very small screens */
+  }
+
+  .step-header {
+    background: #f9f9f9;
+    padding: 12px;
+    border-radius: 6px;
+  }
+  
+  .summary-box {
+    padding: 0;
+    background: transparent;
+  }
 }
