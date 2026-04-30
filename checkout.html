@@ -95,17 +95,10 @@
               <div class="step-content">
                 <div class="shipping-methods">
                   <label class="method-option">
-                    <input type="radio" name="shippingMethod" value="standard" checked>
+                    <input type="radio" name="shippingMethod" value="standard" checked disabled>
                     <div class="method-info">
                       <span class="method-name">Standard Shipping (3-5 Days)</span>
                       <span class="method-price">FREE</span>
-                    </div>
-                  </label>
-                  <label class="method-option">
-                    <input type="radio" name="shippingMethod" value="express">
-                    <div class="method-info">
-                      <span class="method-name">Express Shipping (1-2 Days)</span>
-                      <span class="method-price">₹150</span>
                     </div>
                   </label>
                 </div>
@@ -145,7 +138,21 @@
                 <h2>Review & Place Order</h2>
               </div>
               <div class="step-content">
-                <div class="review-details">
+                <div class="review-details-summary">
+                  <div class="review-section-box">
+                    <h3>Shipping Address <button type="button" onclick="goToStep(1)">Edit</button></h3>
+                    <p id="reviewShippingAddress">Loading...</p>
+                  </div>
+                  <div class="review-section-box">
+                    <h3>Shipping Method</h3>
+                    <p id="reviewShippingMethod">Standard Shipping (FREE)</p>
+                  </div>
+                  <div class="review-section-box">
+                    <h3>Payment Method <button type="button" onclick="goToStep(3)">Edit</button></h3>
+                    <p id="reviewPaymentMethod">Loading...</p>
+                  </div>
+                </div>
+                <div class="review-disclaimer mt-2">
                   <p>By clicking "Place Order", you agree to our terms and conditions. We will send an order confirmation to your phone.</p>
                 </div>
                 <button type="button" id="placeOrderBtn" class="btn-primary place-order-btn">Place Order</button>

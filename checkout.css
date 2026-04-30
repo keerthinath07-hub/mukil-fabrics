@@ -357,6 +357,51 @@
 }
 
 /* FOOTER */
+/* REVIEW SECTION SUMMARY */
+.review-details-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.review-section-box {
+  padding: 20px;
+  background: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+.review-section-box h3 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.review-section-box h3 button {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-transform: none;
+  font-weight: 600;
+}
+
+.review-section-box p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+.review-disclaimer {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
 .checkout-footer {
   background: #fff;
   padding: 40px 0;

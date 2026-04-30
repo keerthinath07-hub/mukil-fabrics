@@ -69,11 +69,44 @@ window.nextStep = function(step) {
     currentStepEl.classList.add('completed');
     nextStepEl.classList.add('active');
     
+    // If moving to Review (Step 4), populate the summary
+    if (step === 3) {
+      populateReviewSection();
+    }
+
     // Scroll to top of next step
     nextStepEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
     currentStep = step + 1;
   }
 };
+
+window.goToStep = function(step) {
+  document.querySelectorAll('.step-item').forEach((s, i) => {
+    s.classList.remove('active');
+    if (i + 1 < step) s.classList.add('completed');
+    else s.classList.remove('completed');
+  });
+  
+  const targetStep = document.getElementById(`step${step}`);
+  if (targetStep) {
+    targetStep.classList.add('active');
+    targetStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    currentStep = step;
+  }
+};
+
+function populateReviewSection() {
+  const firstName = document.getElementById('firstName').value;
+  const lastName = document.getElementById('lastName').value;
+  const address = `${document.getElementById('address1').value}, ${document.getElementById('address2').value || ''}, ${document.getElementById('city').value}, ${document.getElementById('state').value} - ${document.getElementById('zip').value}`;
+  const phone = document.getElementById('phone').value;
+  
+  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+  const paymentText = paymentMethod === 'upi' ? 'UPI / QR (PhonePe, GPay)' : 'Cash on Delivery (COD)';
+
+  document.getElementById('reviewShippingAddress').innerHTML = `<strong>${firstName} ${lastName}</strong><br>${address}<br>Phone: ${phone}`;
+  document.getElementById('reviewPaymentMethod').textContent = paymentText;
+}
 
 async function processOrder() {
   const firstName = document.getElementById('firstName').value;
