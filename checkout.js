@@ -181,10 +181,19 @@ async function processOrder() {
 
   const orderId = 'OR' + nextOrderNum.toString().padStart(3, '0');
 
+  // Capture email if logged in
+  const { data: { session } } = await supabase.auth.getSession();
+  const customerEmail = session ? session.user.email : null;
+
   const order = {
     id: orderId,
     date: new Date().toISOString(),
-    customer: { name: `${firstName} ${lastName}`, phone, address },
+    customer: { 
+      name: `${firstName} ${lastName}`, 
+      phone, 
+      address,
+      email: customerEmail 
+    },
     items: [...cart],
     total: totalAmount
   };

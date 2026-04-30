@@ -642,10 +642,14 @@ async function processCheckout(e) {
 
   const orderId = 'OR' + nextOrderNum.toString().padStart(3, '0');
 
+  // Capture email if logged in
+  const { data: { session } } = await supabase.auth.getSession();
+  const customerEmail = session ? session.user.email : null;
+
   const order = {
     id: orderId,
     date: new Date().toISOString(),
-    customer: { name, phone, address },
+    customer: { name, phone, address, email: customerEmail },
     items: [...cart],
     total: totalAmount
   };
@@ -810,16 +814,34 @@ async function fetchUserOrders(email) {
     }
 
     orderList.innerHTML = userOrders.map(order => `
-      <div class="user-order-card" style="padding: 15px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 12px; background: #fff;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+      <div class="user-order-card" style="padding: 20px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 15px; background: #fff;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
           <div>
-            <div style="font-weight: 700; font-size: 0.95rem;">Order #${order.id}</div>
-            <div style="font-size: 0.8rem; color: #999;">${new Date(order.date).toLocaleDateString()}</div>
+            <div style="font-weight: 800; font-size: 1rem; color: #000;">Order #${order.id}</div>
+            <div style="font-size: 0.8rem; color: #999; margin-top: 2px;">${new Date(order.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}</div>
           </div>
-          <div style="font-weight: 700; color: var(--accent);">₹${order.total}</div>
+          <div style="text-align: right;">
+            <div style="font-weight: 800; color: #000; font-size: 1.1rem;">₹${order.total}</div>
+            <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: #4caf50; font-weight: 700;">Confirmed</div>
+          </div>
         </div>
-        <div style="font-size: 0.85rem; color: #666; border-top: 1px dashed #eee; padding-top: 10px;">
-          ${order.items.map(item => `${item.qty}x ${item.name} (${item.size})`).join(', ')}
+        
+        <div style="background: #fcfcfc; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #f5f5f5;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 5px; font-weight: 700;">Shipping to</div>
+          <div style="font-size: 0.85rem; line-height: 1.4; color: #333;">
+            <strong>${order.customer.name}</strong><br>
+            ${order.customer.address}
+          </div>
+        </div>
+
+        <div style="font-size: 0.85rem; color: #666; border-top: 1px dashed #eee; padding-top: 15px;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 8px; font-weight: 700;">Items</div>
+          ${order.items.map(item => `
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+              <span>${item.qty}x ${item.name} <span style="color:#999; font-size:0.8rem;">(${item.size})</span></span>
+              <span style="font-weight: 500;">₹${item.price * item.qty}</span>
+            </div>
+          `).join('')}
         </div>
       </div>
     `).join('');
